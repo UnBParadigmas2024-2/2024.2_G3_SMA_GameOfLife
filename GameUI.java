@@ -7,6 +7,7 @@ public class GameUI extends JFrame {
     private JPanel gridPanel;
     private boolean[][] cellStates;
     private final int gridSize = 25; // Tamanho da grade
+    private GameUIAgent agent; // Referência ao agente
 
     public GameUI() {
         setTitle("Game of Life");
@@ -43,46 +44,40 @@ public class GameUI extends JFrame {
                 JButton cellButton = new JButton();
                 cellButton.setBackground(Color.WHITE);
                 final int x = i, y = j;
-                cellButton.addActionListener(e -> toggleCellState(x, y, cellButton));
+                cellButton.addActionListener(e -> handleCellSelection(x, y, cellButton));
                 gridPanel.add(cellButton);
             }
         }
         add(gridPanel, BorderLayout.CENTER);
 
         // Adicionar ações aos botões
-        startButton.addActionListener(e -> startGame());
-        pauseButton.addActionListener(e -> pauseGame());
-        resetButton.addActionListener(e -> resetGame());
-        clearButton.addActionListener(e -> clearGrid());
+        startButton.addActionListener(e -> triggerBehavior("play"));
+        pauseButton.addActionListener(e -> triggerBehavior("pause"));
+        resetButton.addActionListener(e -> triggerBehavior("reset"));
+        clearButton.addActionListener(e -> triggerBehavior("clear"));
     }
 
-    private void toggleCellState(int x, int y, JButton button) {
-        cellStates[x][y] = !cellStates[x][y];
-        button.setBackground(cellStates[x][y] ? Color.BLACK : Color.WHITE);
+    public void setAgent(GameUIAgent agent) {
+        this.agent = agent;
     }
 
-    private void startGame() {
-        // Enviar comando para o agente controlador iniciar a simulação
-    }
-
-    private void pauseGame() {
-        // Enviar comando para o agente controlador pausar
-    }
-
-    private void resetGame() {
-        // Reiniciar os estados para o inicial
-    }
-
-    private void clearGrid() {
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                cellStates[i][j] = false;
-                ((JButton) gridPanel.getComponent(i * gridSize + j)).setBackground(Color.WHITE);
-            }
+    private void triggerBehavior(String behaviorName) {
+        if (agent != null) {
+            agent.addBehaviorByName(behaviorName);
+        } else {
+            System.err.println("Agente não está definido!");
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GameUI().setVisible(true));
+    private void handleCellSelection(int x, int y, JButton button) {
+        cellStates[x][y] = !cellStates[x][y];
+        button.setBackground(cellStates[x][y] ? Color.BLACK : Color.WHITE);
+
+        // Envia comando para o agente informando a célula clicada
+        if (agent != null) {
+            agent.addBehaviorByName("cell", x, y);
+        } else {
+            System.err.println("Agente não está definido!");
+        }
     }
 }

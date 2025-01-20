@@ -5,3 +5,11 @@
 /out
 /bin
 /lib
+/GameUIAgent.class
+/GameUIAgent$CellSelectionBehavior.class
+/GameUIAgent$ClearGridBehavior.class
+/GameUIAgent$PauseBehavior.class
+/GameUIAgent$PlayBehavior.class
+/GameUIAgent$ResetBehavior.class
+/MTPs-Main-Container.txt
+/APDescription.txt
