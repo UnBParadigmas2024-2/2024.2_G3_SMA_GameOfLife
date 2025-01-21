@@ -76,7 +76,7 @@ Aqui está a tabela com os nomes em ordem alfabética:
 | Lais Portela      |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
 | Luciano Ricardo   |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
 | Luiz Henrique     |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Natan Tavares     |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
+| Natan Tavares     |  Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes            |               Excelente                                                                 | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
 | Pablo Christianno |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
 
 ## Outros 
@@ -213,16 +213,16 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Natan Tavares</summary>
 
 ### Lições Aprendidas  
-- 
+- Aprendi a estruturar um ambiente básico de multi agentes e a forma como devem comunicar entre si. Tive que ir atrás de como representar essa comunicação em forma de diagramas para os outros membros do grupo também
 
 ### Percepções  
-- 
+- Achei complicado fazer o esqueleto do projeto e pensar o comportamento que cada agente deve ter. Mesmo estando confiante da estrutura feita, muito provavelmente terá problemas na hora da programação que irão revelar necessidades de mudanças na comunicação entre agentes
 
 ### Contribuições e Fragilidades  
-- 
+- Acredito que usamos comportamentos e estruturas de mensagens bem básicas comparado ao que o JADE oferece, talvez haja uma forma mais eficiente de refazer este projeto
 
 ### Trabalhos Futuros  
-- 
+- Deve haver alguma forma de tornar os agentes mais inteligentes e usar comportamentos mais complexos a fim de otimizat todo o sistema. 
 
 </details>
 
