@@ -66,18 +66,18 @@ TEMPO: +/- 15min -->
 
 Aqui está a tabela com os nomes em ordem alfabética:
 
-| Nome do Membro    | Contribuição | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios                                                                        |
-| ----------------- | ------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| Amanda Nobre      |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Fellipe Pereira   |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Gabriel Sabanai   |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Guilherme Barbosa |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Ingrid Carvalho   |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Lais Portela      |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Luciano Ricardo   |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Luiz Henrique     |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
-| Natan Tavares     |  Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes            |               Excelente                                                                 | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
-| Pablo Christianno |              |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX) |
+| Nome do Membro    | Contribuição                                                                                                                                                | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios                                                                                  |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| Amanda Nobre      |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Fellipe Pereira   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Gabriel Sabanai   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Guilherme Barbosa |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Ingrid Carvalho   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Lais Portela      |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Luciano Ricardo   | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
+| Luiz Henrique     |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Natan Tavares     | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
+| Pablo Christianno |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 
 ## Outros 
 Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a lições aprendidas, contribuições, percepções, fragilidades e trabalhos futuros.
@@ -181,16 +181,16 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Luciano Ricardo</summary>
 
 ### Lições Aprendidas  
-- 
+- Aprendi muito sobre SMA e principalmente sobre a forma como eles se comunicam entre si. 
 
 ### Percepções  
-- 
+- Achei um paradigma bastante dificil, já que um desafio simples resulta em um programa bem complexo. Porém me acho que a complexidade se paga na robustez e na qualidade do software.
 
 ### Contribuições e Fragilidades  
-- 
+- Ajudei principalemte no design de interface gráfica e na construção da estrutura dos agentes. Dessa forma foi um grande desafio ficar pensando em como os agentes deveriam se comunicam de forma que o objetivo do projeto fosse alcançado. Minha maior dificulda foi entender os CyclicBehaviours e como eles ficam esperando por uma mensagem para executar uma ação.
 
 ### Trabalhos Futuros  
-- 
+- Acho que poderiamos implementar uma funcionadade de passos que o jogo avance apenas um ciclo por vez.
 
 </details>
 
