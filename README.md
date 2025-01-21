@@ -38,11 +38,28 @@ Seu principal objetivo é implementar o jogo Game of Live inventado pelo matemat
 **Linguagens**: Java<br>
 **Tecnologias**: Jade<br> 
 
-
 <!-- Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
 Insira um manual ou um script para auxiliar ainda mais.
 Gifs animados e outras ilustrações são bem-vindos! -->
 
+1. Instale o Java, que pode ser baixado [aqui](https://www.oracle.com/java/technologies/downloads/).
+2. Instale o Jade 4.6.0 ou superior, que pode ser baixado [aqui](https://jade.tilab.com/download/jade/).
+3. Certifique-se de configurar as variaveis de ambiente do Java e do Jade.
+4. Clone esse repositorio com o comando `git clone https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife.git`.
+
+#### **Execução com o Eclipse**
+1. Abra o projeto GameOfLife no Eclipse.
+2. Clique com o botão direito no projeto e vá em **Run As > Run Configurations**.
+3. No painel esquerdo, selecione **Java Application** e clique em **New Configuration**.
+4. Na aba **Main**, no campo **Project**, selecione `2024.2_G3_SMA_GameOfLife`.
+5. Na aba **Main** no campo **Main Class**, digite `jade.Boot`.
+6. Na aba **Arguments**, em **Program arguments**, digite `-gui game:src.GameUIAgent`.
+7. Clique em **Apply** e em seguida **Run**.
+
+#### **Execução com o VSCode**
+1. Abra o projeto GameOfLife no VSCode.
+2. Certifique-se de ter a extensão `Extension Pack for Java` instalada.
+3. Clique com o botão esquerdo no arquivo `SetupAgent.java` e clique em `Run Java`
 
 ## Uso 
 
