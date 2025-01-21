@@ -1,6 +1,7 @@
 import javax.swing.SwingUtilities;
 
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -32,6 +33,8 @@ public class GameUIAgent extends Agent {
             gameUI.setVisible(true);
             gameUI.setAgent(this); // Passa uma referência do agente para a UI
         });
+        
+        //TO-DO: Inicializar o ControllerAgent
     }
 
     protected void takeDown() {
@@ -70,6 +73,16 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Play
     private class PlayBehavior extends OneShotBehaviour {
+    	//TO-DO: Mandar a ActiveCellsList para o ControllerAgent que irá criar os agentes para cada célula
+    	// e iniciar os ciclos do jogo.
+    	// O valor inicial da ActiveCellsList deve ser salva em outra lista para ser usada no reset.
+    	// InicialActiveCellsList
+    	// O botão "Play" só deve ser renderizado se o jogo não tiver sido começado
+    	
+    	// Estrutura da mensagem
+    	// Tipo: ACL.INFORM
+    	// ContentObject: ActiveCellsList
+    	// Destinatário: ControllerAgent (Pegar pelo DF)
         public void action() {
             System.out.println("Play behavior ativado!");
         }
@@ -77,6 +90,8 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Pausar
     private class PauseBehavior extends OneShotBehaviour {
+    	//TO-DO: Mandar mensagem para o ControllerAgent informando para pausar o comportamento ciclico
+    	// que atualiza os ciclos e agentes vivos/mortos
         public void action() {
             System.out.println("Pause behavior ativado!");
         }
@@ -84,6 +99,8 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Reset
     private class ResetBehavior extends OneShotBehaviour {
+    	//TO-DO: mandar mensagem para o controllerAgent para que seja reiniciado os ciclos
+    	// e utilizado o valor do InicialActiveCellsList para criar os agentes vivos
         public void action() {
             System.out.println("Reset behavior ativado!");
         }
@@ -91,6 +108,8 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Limpar
     private class ClearGridBehavior extends OneShotBehaviour {
+    	//TO-DO: O botão "limpar" só deve estar renderizado antes do jogo começar
+    	// Ao apertar ele, a ActiveCellsList deve ser zerada
         public void action() {
             System.out.println("Clear grid behavior ativado!");
         }
@@ -98,6 +117,8 @@ public class GameUIAgent extends Agent {
 
     // Behavior para a seleção de células
     private class CellSelectionBehavior extends OneShotBehaviour {
+    	//TO-DO: Atualizar uma lista (ActiveCellsList) de células que estão ativadas. 
+    	//Adicionar na lista quando for selecionada e tirar da lista quando for desselecionada
         private final int x;
         private final int y;
 
@@ -110,4 +131,14 @@ public class GameUIAgent extends Agent {
             System.out.println("Célula selecionada: (" + x + ", " + y + ")");
         }
     }
+    
+    private class UpdateUI extends CyclicBehaviour {
+    	//TO-DO: Ficará em ciclo esperando uma mensagem de atualização do ControllerAgent
+    	// Essa mensagem deverá conter uma lista dos agentes vivos (ActiveCellsList) e o "cicleNum", número do ciclo atual
+    	// Quando receber esta mensagem, deverá atualizar a interface com os agentes vivos e o número do ciclo
+        public void action() {
+            
+        }
+    }
+	
 }

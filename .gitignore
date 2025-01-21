@@ -14,3 +14,10 @@
 /GameUIAgent$ResetBehavior.class
 /MTPs-Main-Container.txt
 /APDescription.txt
+/ControllerAgent$SetAliveCells.class
+/ControllerAgent$UpdateGameCicle.class
+/GameUIAgent$UpdateUI.class
+/CellAgent$SetInicialState.class
+/CellAgent$VerifyNeighbor.class
+/CellAgent$SetInitialState.class
+/ControllerAgent$UpdateGameCycle.class
