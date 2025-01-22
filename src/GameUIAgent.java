@@ -2,6 +2,7 @@ package src;
 
 import javax.swing.SwingUtilities;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -9,10 +10,31 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.Point;
+
 
 public class GameUIAgent extends Agent {
     private static final long serialVersionUID = 1L;
     private GameUI gameUI;
+
+    private List<Point> activeCellsList;
+    private List<Point> InicialActiveCellsList;
+    // Método para obter a lista de células ativas
+    public List<Point> getActiveCellsList() {
+        if (activeCellsList == null) {
+            activeCellsList = new ArrayList<>();
+        }
+        return activeCellsList;
+    }
+    public List<Point> getInicialActiveCellsList() {
+        if (InicialActiveCellsList == null) {
+            InicialActiveCellsList = new ArrayList<>();
+        }
+        return InicialActiveCellsList;
+    }
 
     protected void setup() {
         // Registrar o agente no DF
@@ -75,7 +97,7 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Play
     private class PlayBehavior extends OneShotBehaviour {
-    	//TO-DO: Mandar a ActiveCellsList para o ControllerAgent que irá criar os agentes para cada célula
+        //TO-DO: Mandar a ActiveCellsList para o ControllerAgent que irá criar os agentes para cada célula
     	// e iniciar os ciclos do jogo.
     	// O valor inicial da ActiveCellsList deve ser salva em outra lista para ser usada no reset.
     	// InicialActiveCellsList
@@ -86,24 +108,54 @@ public class GameUIAgent extends Agent {
     	// ContentObject: ActiveCellsList
     	// Destinatário: ControllerAgent (Pegar pelo DF)
         public void action() {
+            // Copiar o conteúdo da ActiveCellsList para InicialActiveCellsList
+            ((GameUIAgent) myAgent).getInicialActiveCellsList().addAll(((GameUIAgent) myAgent).getActiveCellsList());
+    
+            // Criar a mensagem ACL para enviar a ActiveCellsList ao ControllerAgent
+            ACLMessage playMessage = new ACLMessage(ACLMessage.INFORM);
+            playMessage.setOntology("startGameCycle");  // Nome da ontologia
+            playMessage.setContentObject(((GameUIAgent) myAgent).getActiveCellsList());  // Adicionando a ActiveCellsList
+    
+            // Criar AID para o ControllerAgent e adicionar como receptor
+            AID controllerAID = new AID("ControllerAgent", AID.ISLOCALNAME);
+            playMessage.addReceiver(controllerAID);
+    
+            // Enviar a mensagem
+            myAgent.send(playMessage);
+    
             System.out.println("Play behavior ativado!");
         }
     }
-
     // Behavior para o botão Pausar
     private class PauseBehavior extends OneShotBehaviour {
     	//TO-DO: Mandar mensagem para o ControllerAgent informando para pausar o comportamento ciclico
     	// que atualiza os ciclos e agentes vivos/mortos
         public void action() {
+            // Criando a mensagem ACL
+            ACLMessage pauseMessage = new ACLMessage(ACLMessage.INFORM);
+            pauseMessage.setOntology("pauseCycleUpdate");  // nome da mensagem
+            // Criando o AID diretamente com o nome conhecido
+            AID controllerAID = new AID("ControllerAgent", AID.ISLOCALNAME); // nome do agente
+            pauseMessage.addReceiver(controllerAID);
+            myAgent.send(pauseMessage);
+            
             System.out.println("Pause behavior ativado!");
         }
     }
 
     // Behavior para o botão Reset
     private class ResetBehavior extends OneShotBehaviour {
-    	//TO-DO: mandar mensagem para o controllerAgent para que seja reiniciado os ciclos
-    	// e utilizado o valor do InicialActiveCellsList para criar os agentes vivos
+        // TO-DO: enviar mensagem para o ControllerAgent para reiniciar os ciclos
+        // e utilizar o valor de InicialActiveCellsList para criar os agentes vivos
         public void action() {
+            // Criando a mensagem ACL
+            ACLMessage resetMessage = new ACLMessage(ACLMessage.INFORM);
+            resetMessage.setOntology("resetCycle");  // nome da mensagem
+            // Criando o AID diretamente com o nome conhecido
+            AID controllerAID = new AID("ControllerAgent", AID.ISLOCALNAME); // nome do agente
+            resetMessage.addReceiver(controllerAID);
+            myAgent.send(resetMessage);
+            
             System.out.println("Reset behavior ativado!");
         }
     }
@@ -119,20 +171,28 @@ public class GameUIAgent extends Agent {
 
     // Behavior para a seleção de células
     private class CellSelectionBehavior extends OneShotBehaviour {
-    	//TO-DO: Atualizar uma lista (ActiveCellsList) de células que estão ativadas. 
-    	//Adicionar na lista quando for selecionada e tirar da lista quando for desselecionada
+        // TO-DO: Atualizar uma lista (ActiveCellsList) de células que estão ativadas.
+        // Adicionar na lista quando for selecionada e tirar da lista quando for desselecionada
         private final int x;
         private final int y;
-
+    
         public CellSelectionBehavior(int x, int y) {
             this.x = x;
             this.y = y;
         }
-
+    
         public void action() {
+            // Adicionar ou remover a célula da ActiveCellsList
+            if (((GameUIAgent) myAgent).getActiveCellsList().contains(new Point(x, y))) {
+                ((GameUIAgent) myAgent).getActiveCellsList().remove(new Point(x, y));
+            } else {
+                ((GameUIAgent) myAgent).getActiveCellsList().add(new Point(x, y));
+            }
+    
             System.out.println("Célula selecionada: (" + x + ", " + y + ")");
         }
     }
+    
     
     private class UpdateUI extends CyclicBehaviour {
     	//TO-DO: Ficará em ciclo esperando uma mensagem de atualização do ControllerAgent
