@@ -20,6 +20,8 @@ public class ControllerAgent extends Agent {
         registerInDF();
 
         createCellAgents(5, 5);
+
+        addBehaviour(new SetAliveCells());
     }
 	
 	private void registerInDF() {
@@ -59,17 +61,38 @@ public class ControllerAgent extends Agent {
     }
 
 	private class SetAliveCells extends CyclicBehaviour {
-    	//TO-DO: Esse behaviour deve esperar o ActiveCellsList enviado pelo GameUIAgent
-		// Quando receber a lista, deve mandar uma mensagem para cada um dos CellAgent com o "isAlive"
-		// para que eles possam atualizar os próprios estados
-		
-		// Estrutura da mensagem (Para cada um das células)
-		// Tipo: ACL.INFORM
-		// Ontology: "inicialState"
-		// Content: "isAlive" (Irá como string e deve ser convertido como booleano, pode ser utilizado o ContentObject diretamente se for melhor)
-		// Destinatário: cada uma das células
+        @Override
         public void action() {
-            
+            ACLMessage msg = myAgent.receive();
+            if (msg != null && "ActiveCellsList".equals(msg.getOntology())) {
+                String content = msg.getContent(); 
+                
+                List<String> aliveCells = parseAliveCells(content);
+    
+                for (AID cellAID : cellAgents) {
+                    boolean isAlive = aliveCells.contains(cellAID.getLocalName());
+                    
+                    ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+                    informMsg.setOntology("inicialState");
+                    informMsg.setContent(String.valueOf(isAlive));
+                    informMsg.addReceiver(cellAID);
+    
+                    myAgent.send(informMsg);
+                }
+            } else {
+                block();
+            }
+        }
+    
+        private List<String> parseAliveCells(String content) {
+            List<String> result = new ArrayList<>();
+            if (content != null && !content.isEmpty()) {
+                String[] tokens = content.split(";");
+                for (String t : tokens) {
+                    result.add(t.trim());
+                }
+            }
+            return result;
         }
     }
 	
