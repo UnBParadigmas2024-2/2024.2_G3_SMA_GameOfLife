@@ -22,6 +22,7 @@ public class ControllerAgent extends Agent {
         createCellAgents(5, 5);
 
         addBehaviour(new SetAliveCells());
+        addBehaviour(new UpdateGameCycle());
     }
 	
 	private void registerInDF() {
@@ -97,26 +98,81 @@ public class ControllerAgent extends Agent {
     }
 	
 	private class UpdateGameCycle extends CyclicBehaviour {
-    	//TO-DO: Será iniciado depois do SetAliveCells, irá começar no ciclo 0.
-		// Passo 1: Enviará uma mensagem para todos os agentes de células perguntando se continuam vivos ou mortos
-		// Passo 2: Então irá esperar todos os agentes de células retornarem com uma mensagem dizendo se estão vivos/mortos
-		// Deverá criar uma nova lista de agentes vivos e mandá-la de volta para o GameUIAgent que irá atualizar a interface
-		// Se todos os agentes estiverem mortos, o jogo deve ser encerrado.
-		// Passo 3: Junto com a nova lista, deve ser mandado o valor da variável "cycleNum" incrementada que também estará na interface
-		// Volta para Passo 1
-		
-		// Estrutura da mensagem do Passo 1
-		// Tipo: ACL.REQUEST
-		// Ontology: "verifyIsAlive"
-		// Destinatário: cada uma das células
-		
-		// Estrutura da mensagem do Passo 3
-		// Tipo: ACL.INFORM
-		// Ontology: "updateUI"
-		// ContentObject: ActiveCellsList, cycleNum
-		// Destinatário: GameUIAgent (Pegar no DF)
-		public void action() {
-            
+
+        private int step = 0;
+
+        private int responsesReceived = 0;
+
+        private List<AID> aliveCellsInThisCycle = new ArrayList<>();
+    
+        @Override
+        public void action() {
+            switch (step) {
+                case 0:
+                    requestAliveStatus();
+                    step = 1;
+                    break;
+    
+                case 1:
+                    ACLMessage reply = myAgent.receive();
+                    if (reply != null && "verifyIsAlive-response".equals(reply.getOntology())) {
+                        responsesReceived++;
+    
+                        if ("true".equals(reply.getContent())) {
+                            aliveCellsInThisCycle.add(reply.getSender());
+                        }
+    
+                        if (responsesReceived == cellAgents.size()) {
+                            if (aliveCellsInThisCycle.isEmpty()) {
+                                System.out.println("Todas as células estão mortas. Encerrando jogo...");
+                                myAgent.doDelete();
+                                return;
+                            }
+                            informUIAgent();
+    
+                            cycleNum++;
+                            responsesReceived = 0;
+                            aliveCellsInThisCycle.clear();
+                            step = 0; 
+                        }
+                    } else {
+                        block();
+                    }
+                    break;
+            }
+        }
+    
+        private void requestAliveStatus() {
+            for (AID cellAID : cellAgents) {
+                ACLMessage req = new ACLMessage(ACLMessage.REQUEST);
+                req.setOntology("verifyIsAlive");
+                req.setContent("Are you alive?");
+                req.addReceiver(cellAID);
+                myAgent.send(req);
+            }
+        }
+    
+        private void informUIAgent() {
+            AID uiAgent = searchGameUIAgentInDF(); 
+            if (uiAgent != null) {
+                ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+                informMsg.setOntology("updateUI");
+                informMsg.addReceiver(uiAgent);
+    
+                StringBuilder sb = new StringBuilder();
+                sb.append("cycleNum=").append(cycleNum).append(";");
+                sb.append("aliveCells=");
+                for (int i = 0; i < aliveCellsInThisCycle.size(); i++) {
+                    sb.append(aliveCellsInThisCycle.get(i).getLocalName());
+                    if (i < aliveCellsInThisCycle.size() - 1) {
+                        sb.append(",");
+                    }
+                }
+                informMsg.setContent(sb.toString());
+                myAgent.send(informMsg);
+    
+                System.out.println("Enviando updateUI para GameUIAgent: cycleNum=" + cycleNum);
+            }
         }
     }
 }
