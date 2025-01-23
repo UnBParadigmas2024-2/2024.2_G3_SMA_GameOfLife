@@ -7,14 +7,31 @@ public class ControllerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
 
-  private int cycleNum = 0;
-  
+    private int cycleNum = 0;
+
 	protected void setup() {
-		//TO-DO: Criar um agente para cada uma das células, todas como mortas
-		// Deverá se cadastrar no DF
+		System.out.println(getLocalName() + ": inicializando ControllerAgent...");
+
+        registerInDF();
     }
 	
-	
+	private void registerInDF() {
+        try {
+            DFAgentDescription dfd = new DFAgentDescription();
+            dfd.setName(getAID());
+            
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("controller-agent");
+            sd.setName(getLocalName() + "-controller");
+            
+            dfd.addServices(sd);
+    
+            DFService.register(this, dfd);
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+    }
+
 	private class SetAliveCells extends CyclicBehaviour {
     	//TO-DO: Esse behaviour deve esperar o ActiveCellsList enviado pelo GameUIAgent
 		// Quando receber a lista, deve mandar uma mensagem para cada um dos CellAgent com o "isAlive"
