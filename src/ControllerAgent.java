@@ -1,31 +1,49 @@
 package src;
 
+import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.FSMBehaviour;
+import jade.core.AID;
+import jade.lang.acl.ACLMessage;
+import jade.content.ContentElement;
+import jade.content.lang.Codec;
+import jade.content.onto.Ontology;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.*;
+import jade.domain.FIPAException;
+import jade.wrapper.AgentController;
+import jade.wrapper.StaleProxyException;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
-
 public class ControllerAgent extends Agent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private int cycleNum = 0;
 
     private List<AID> cellAgents = new ArrayList<>();
 
-	protected void setup() {
-		System.out.println(getLocalName() + ": inicializando ControllerAgent...");
+    private AID gameUIAgentAID = null;
+
+    @Override
+    protected void setup() {
+        System.out.println(getLocalName() + ": inicializando ControllerAgent...");
 
         registerInDF();
 
         createCellAgents(5, 5);
 
+        gameUIAgentAID = searchGameUIAgentInDF();
+
         addBehaviour(new SetAliveCells());
         addBehaviour(new UpdateGameCycle());
+
+        System.out.println(getLocalName() + ": pronto!");
     }
-	
-	private void registerInDF() {
+
+    private void registerInDF() {
         try {
             DFAgentDescription dfd = new DFAgentDescription();
             dfd.setName(getAID());
@@ -35,7 +53,7 @@ public class ControllerAgent extends Agent {
             sd.setName(getLocalName() + "-controller");
             
             dfd.addServices(sd);
-    
+
             DFService.register(this, dfd);
         } catch (FIPAException e) {
             e.printStackTrace();
@@ -47,13 +65,13 @@ public class ControllerAgent extends Agent {
             for (int y = 0; y < height; y++) {
                 String cellName = "CellAgent-" + x + "-" + y;
                 try {
-                    AgentController ac =
-                    getContainerController().createNewAgent(cellName, "src.CellAgent", null);
+                    AgentController ac = 
+                        getContainerController().createNewAgent(cellName, "src.CellAgent", null);
                     ac.start();
-                    
-                    // Adiciona o AID na lista
+
                     AID aid = new AID(cellName, AID.ISLOCALNAME);
                     cellAgents.add(aid);
+
                 } catch (StaleProxyException e) {
                     e.printStackTrace();
                 }
@@ -61,30 +79,47 @@ public class ControllerAgent extends Agent {
         }
     }
 
-	private class SetAliveCells extends CyclicBehaviour {
+    private AID searchGameUIAgentInDF() {
+        DFAgentDescription template = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("game-ui-agent");
+        template.addServices(sd);
+        try {
+            DFAgentDescription[] results = DFService.search(this, template);
+            if (results.length > 0) {
+                return results[0].getName();
+            }
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private class SetAliveCells extends CyclicBehaviour {
         @Override
         public void action() {
             ACLMessage msg = myAgent.receive();
-            if (msg != null && "ActiveCellsList".equals(msg.getOntology())) {
+            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("ActiveCellsList")) {
                 String content = msg.getContent(); 
-                
+
                 List<String> aliveCells = parseAliveCells(content);
-    
+
                 for (AID cellAID : cellAgents) {
                     boolean isAlive = aliveCells.contains(cellAID.getLocalName());
                     
                     ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
                     informMsg.setOntology("inicialState");
-                    informMsg.setContent(String.valueOf(isAlive));
                     informMsg.addReceiver(cellAID);
-    
+                    informMsg.setContent(String.valueOf(isAlive));
+                    
                     myAgent.send(informMsg);
                 }
+
             } else {
                 block();
             }
         }
-    
+
         private List<String> parseAliveCells(String content) {
             List<String> result = new ArrayList<>();
             if (content != null && !content.isEmpty()) {
@@ -96,15 +131,16 @@ public class ControllerAgent extends Agent {
             return result;
         }
     }
-	
-	private class UpdateGameCycle extends CyclicBehaviour {
+
+
+    private class UpdateGameCycle extends CyclicBehaviour {
 
         private int step = 0;
 
         private int responsesReceived = 0;
 
         private List<AID> aliveCellsInThisCycle = new ArrayList<>();
-    
+
         @Override
         public void action() {
             switch (step) {
@@ -112,28 +148,32 @@ public class ControllerAgent extends Agent {
                     requestAliveStatus();
                     step = 1;
                     break;
-    
+
                 case 1:
                     ACLMessage reply = myAgent.receive();
-                    if (reply != null && "verifyIsAlive-response".equals(reply.getOntology())) {
+                    if (reply != null && reply.getOntology() != null &&
+                            reply.getOntology().equals("verifyIsAlive-response")) {
+
                         responsesReceived++;
-    
-                        if ("true".equals(reply.getContent())) {
+
+                        String content = reply.getContent();
+                        if ("true".equals(content)) {
                             aliveCellsInThisCycle.add(reply.getSender());
                         }
-    
+
                         if (responsesReceived == cellAgents.size()) {
                             if (aliveCellsInThisCycle.isEmpty()) {
                                 System.out.println("Todas as células estão mortas. Encerrando jogo...");
-                                myAgent.doDelete();
+                                doDelete(); 
                                 return;
                             }
                             informUIAgent();
-    
+
                             cycleNum++;
                             responsesReceived = 0;
                             aliveCellsInThisCycle.clear();
-                            step = 0; 
+
+                            step = 0;
                         }
                     } else {
                         block();
@@ -141,38 +181,47 @@ public class ControllerAgent extends Agent {
                     break;
             }
         }
-    
+
+
         private void requestAliveStatus() {
             for (AID cellAID : cellAgents) {
                 ACLMessage req = new ACLMessage(ACLMessage.REQUEST);
                 req.setOntology("verifyIsAlive");
-                req.setContent("Are you alive?");
                 req.addReceiver(cellAID);
+                req.setContent("Are you alive?");
                 myAgent.send(req);
             }
         }
-    
+
         private void informUIAgent() {
-            AID uiAgent = searchGameUIAgentInDF(); 
-            if (uiAgent != null) {
-                ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
-                informMsg.setOntology("updateUI");
-                informMsg.addReceiver(uiAgent);
-    
-                StringBuilder sb = new StringBuilder();
-                sb.append("cycleNum=").append(cycleNum).append(";");
-                sb.append("aliveCells=");
-                for (int i = 0; i < aliveCellsInThisCycle.size(); i++) {
-                    sb.append(aliveCellsInThisCycle.get(i).getLocalName());
-                    if (i < aliveCellsInThisCycle.size() - 1) {
-                        sb.append(",");
+            if (gameUIAgentAID == null) {
+                gameUIAgentAID = searchGameUIAgentInDF();
+            }
+            if (gameUIAgentAID != null) {
+                try {
+                    ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+                    informMsg.setOntology("updateUI");
+                    informMsg.addReceiver(gameUIAgentAID);
+
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("cycleNum=").append(cycleNum).append(";");
+                    sb.append("aliveCells=");
+                    for (int i = 0; i < aliveCellsInThisCycle.size(); i++) {
+                        sb.append(aliveCellsInThisCycle.get(i).getLocalName());
+                        if (i < aliveCellsInThisCycle.size() - 1) {
+                            sb.append(",");
+                        }
                     }
+                    informMsg.setContent(sb.toString());
+
+                    myAgent.send(informMsg);
+                    System.out.println("Enviado updateUI para GameUIAgent. cycleNum=" + cycleNum);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                informMsg.setContent(sb.toString());
-                myAgent.send(informMsg);
-    
-                System.out.println("Enviando updateUI para GameUIAgent: cycleNum=" + cycleNum);
             }
         }
     }
+
 }
