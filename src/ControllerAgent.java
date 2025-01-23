@@ -1,5 +1,8 @@
 package src;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 
@@ -9,10 +12,14 @@ public class ControllerAgent extends Agent {
 
     private int cycleNum = 0;
 
+    private List<AID> cellAgents = new ArrayList<>();
+
 	protected void setup() {
 		System.out.println(getLocalName() + ": inicializando ControllerAgent...");
 
         registerInDF();
+
+        createCellAgents(5, 5);
     }
 	
 	private void registerInDF() {
@@ -29,6 +36,25 @@ public class ControllerAgent extends Agent {
             DFService.register(this, dfd);
         } catch (FIPAException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void createCellAgents(int width, int height) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                String cellName = "CellAgent-" + x + "-" + y;
+                try {
+                    AgentController ac =
+                    getContainerController().createNewAgent(cellName, "src.CellAgent", null);
+                    ac.start();
+                    
+                    // Adiciona o AID na lista
+                    AID aid = new AID(cellName, AID.ISLOCALNAME);
+                    cellAgents.add(aid);
+                } catch (StaleProxyException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
