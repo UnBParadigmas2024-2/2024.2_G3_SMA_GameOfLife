@@ -82,4 +82,25 @@ public class GameUI extends JFrame {
             System.err.println("Agente não está definido!");
         }
     }
+
+    void clearAllCells() {
+        // Zerar todas as células
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                cellStates[i][j] = false;
+                JButton cellButton = (JButton) gridPanel.getComponent(i * gridSize + j);
+                cellButton.setBackground(Color.WHITE);  // Limpa a célula para branco
+            }
+        }
+    }
+     // Método para atualizar os labels
+     private void updateInterface(int cycleNum, int aliveCellsCount) {
+        cycleLabel.setText("Ciclo: " + cycleNum);
+        aliveCellsLabel.setText("Células Vivas: " + aliveCellsCount);
+    }
+
+    public void onUIUpdate(int newCycleNum, int newAliveCellsCount) {
+        // Chamar o método de atualização da interface
+        updateInterface(newCycleNum, newAliveCellsCount);
+    }
 }
