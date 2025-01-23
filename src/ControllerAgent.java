@@ -6,8 +6,9 @@ import jade.core.behaviours.CyclicBehaviour;
 public class ControllerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
-	//TO-DO: criar variável "cycleNum" que será um inteiro começando em 0
-	
+
+  private int cycleNum = 0;
+  
 	protected void setup() {
 		//TO-DO: Criar um agente para cada uma das células, todas como mortas
 		// Deverá se cadastrar no DF
