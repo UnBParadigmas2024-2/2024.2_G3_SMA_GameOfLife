@@ -70,6 +70,17 @@ public class CellAgent extends Agent {
                 boolean previousState = isAlive;
                 isAlive = (livingNeighbors == 2 || livingNeighbors == 3);
 
+                boolean previousState = isAlive;
+                if (!isAlive && livingNeighbors == 3) {
+                    isAlive = true; // Nascimento
+                } else if (isAlive && livingNeighbors < 2) {
+                    isAlive = false; // Morte por isolamento
+                } else if (isAlive && livingNeighbors > 3) {
+                    isAlive = false; // Morte por superpopulação
+                } else if (isAlive && (livingNeighbors == 2 || livingNeighbors == 3)) {
+                    isAlive = true; // A célula permanece viva
+                }
+
                 if (previousState != isAlive) {
                     if (isAlive) {
                         registerOnDF();
