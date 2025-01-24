@@ -28,6 +28,7 @@ public class CellAgent extends Agent {
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
         sd.setType("CellAgent");
+        // sd.setName(x + "," + y); - Precisa adicionar as cordenadas da celulas quando se registrar
         sd.setName(getLocalName());
         dfd.addServices(sd);
         try {
@@ -66,21 +67,17 @@ public class CellAgent extends Agent {
         public void action() {
             ACLMessage msg = receive();
             if (msg != null && "verifyIsAlive".equals(msg.getOntology())) {
-                int livingNeighbors = getLivingNeighbors();
+                int livingNeighbors = getLivingNeighbors(); // Consulta agentes vivos ao redor
                 boolean previousState = isAlive;
-                isAlive = (livingNeighbors == 2 || livingNeighbors == 3);
 
-                boolean previousState = isAlive;
-                if (!isAlive && livingNeighbors == 3) {
-                    isAlive = true; // Nascimento
-                } else if (isAlive && livingNeighbors < 2) {
-                    isAlive = false; // Morte por isolamento
-                } else if (isAlive && livingNeighbors > 3) {
-                    isAlive = false; // Morte por superpopulação
-                } else if (isAlive && (livingNeighbors == 2 || livingNeighbors == 3)) {
-                    isAlive = true; // A célula permanece viva
-                }
+                // Aplicação das regras do Jogo da Vida
+                if (isAlive && (livingNeighbors < 2 || livingNeighbors > 3)) {
+                    isAlive = false; // Morre por isolamento ou superpopulação
+                } else if (!isAlive && livingNeighbors == 3) {
+                    isAlive = true; // Torna-se viva por nascimento
+                } // Se está viva com 2 ou 3 vizinhos, permanece viva.
 
+                // Atualiza o registro no DF conforme o estado
                 if (previousState != isAlive) {
                     if (isAlive) {
                         registerOnDF();
@@ -89,17 +86,64 @@ public class CellAgent extends Agent {
                     }
                 }
 
+                // Envia o estado atual ao ControllerAgent
                 ACLMessage response = msg.createReply();
                 response.setOntology("verifyIsAliveResponse");
                 response.setContent(Boolean.toString(isAlive));
                 send(response);
+                System.out.println(getLocalName() + " próximo estado: " + isAlive);
             } else {
                 block();
             }
         }
 
         private int getLivingNeighbors() {
-            return (int) (Math.random() * 4); // Exemplo de contagem simulada de vizinhos vivos
+            int count = 0;
+
+            try {
+                // Configurar a busca no DF
+                DFAgentDescription template = new DFAgentDescription();
+                ServiceDescription sd = new ServiceDescription();
+                sd.setType("CellAgent");
+                template.addServices(sd);
+
+                // Recuperar todos os agentes do tipo "CellAgent"
+                DFAgentDescription[] result = DFService.search(myAgent, template);
+
+                for (DFAgentDescription agentDesc : result) {
+                	ServiceDescription service = (ServiceDescription) agentDesc.getAllServices().next();
+                    String[] position = service.getName().split(",");
+
+                    int x = Integer.parseInt(position[0].trim());
+                    int y = Integer.parseInt(position[1].trim());
+
+                    // Coordenadas do agente atual
+                    String[] myPosition = getLocalName().split(",");
+                    int myX = Integer.parseInt(myPosition[0].trim());
+                    int myY = Integer.parseInt(myPosition[1].trim());
+
+                    // Verificar se o agente está ao redor (8 vizinhos)
+                    if (Math.abs(x - myX) <= 1 && Math.abs(y - myY) <= 1 && !(x == myX && y == myY)) {
+                        // Enviar mensagem para verificar se o agente está vivo
+                        ACLMessage query = new ACLMessage(ACLMessage.REQUEST);
+                        query.addReceiver(agentDesc.getName());
+                        query.setOntology("verifyIsAlive");
+                        send(query);
+
+                        // Receber resposta
+                        ACLMessage reply = blockingReceive();
+                        if (reply != null && "verifyIsAliveResponse".equals(reply.getOntology())) {
+                            if (Boolean.parseBoolean(reply.getContent())) {
+                                count++;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return count;
         }
     }
 }
