@@ -33,7 +33,7 @@ public class ControllerAgent extends Agent {
 
         registerInDF();
 
-        createCellAgents(5, 5);
+        createCellAgents(25, 25);
 
         gameUIAgentAID = searchGameUIAgentInDF();
 
