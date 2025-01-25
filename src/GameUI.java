@@ -2,7 +2,8 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
-
+import java.util.List;
+import java.util.ArrayList;
 public class GameUI extends JFrame {
     private JButton startButton, pauseButton, resetButton, clearButton;
     private JLabel cycleLabel, aliveCellsLabel;
@@ -106,14 +107,36 @@ public class GameUI extends JFrame {
             }
         }
     }
-     // Método para atualizar os labels
-     private void updateInterface(int cycleNum, int aliveCellsCount) {
+
+    public void onUIUpdate(int newCycleNum, int newAliveCellsCount, List<String> activeCellsList) {
+        updateInterface(newCycleNum, newAliveCellsCount);
+        updateActiveCells(activeCellsList);  // Atualiza as células ativas na UI
+    }
+    
+
+    private void updateInterface(int cycleNum, int aliveCellsCount) {
         cycleLabel.setText("Ciclo: " + cycleNum);
         aliveCellsLabel.setText("Células Vivas: " + aliveCellsCount);
     }
-
-    public void onUIUpdate(int newCycleNum, int newAliveCellsCount) {
-        // Chamar o método de atualização da interface
-        updateInterface(newCycleNum, newAliveCellsCount);
+    
+    private void updateActiveCells(List<String> activeCellsList) {
+        // Zerar o estado de todas as células
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                JButton cellButton = (JButton) gridPanel.getComponent(i * gridSize + j);
+                cellButton.setBackground(Color.WHITE);  
+            }
+        }
+    
+        // Marcar as células ativas
+        for (String cellName : activeCellsList) {
+            String[] parts = cellName.split(",");
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            
+            JButton cellButton = (JButton) gridPanel.getComponent(x * gridSize + y);
+            cellButton.setBackground(Color.BLACK); 
+        }
     }
+    
 }

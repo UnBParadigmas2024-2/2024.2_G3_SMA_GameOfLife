@@ -366,13 +366,13 @@ public class GameUIAgent extends Agent {
 
                             aliveCellsCount = ActiveCellsList.size();
 
-                            // Atualizar a interface 
+                            // Atualizar a interface
                             System.out.println("Ciclo Atual: " + cycleNum);
                             System.out.println("Células Vivas: " + aliveCellsCount);
                             System.out.println("Lista de Células Vivas: " + ActiveCellsList);
 
                             // Atualizar interface gráfica
-                            gameUI.onUIUpdate(cycleNum, aliveCellsCount);
+                            gameUI.onUIUpdate(cycleNum, aliveCellsCount, ActiveCellsList);
                         } else {
                             System.err.println("Erro: Mensagem recebida com conteúdo nulo.");
                         }

@@ -89,8 +89,8 @@ Aqui está a tabela com os nomes em ordem alfabética:
 | Fellipe Pereira   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Gabriel Sabanai   |                    Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                           |           Excelente                                                                     | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Guilherme Barbosa |                      Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                         |                Excelente                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
-| Ingrid Carvalho   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
-| Lais Portela      |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Ingrid Carvalho   | Desenvolvimento do GameUIAgent e atualização do GameUI: Controle dos botões "Pause", "Play", "Reset" e "Limpar", enviando a lista de células vivas para o Controller Agent e mensagens de notificação sobre o estado do jogo (quando pausado). Além disso, garantir a atualização contínua da interface gráfica. | |[GameUIAgent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/7)           |
+| Lais Portela      | Desenvolvimento do GameUIAgent e atualização do GameUI: Controle dos botões "Pause", "Play", "Reset" e "Limpar", enviando a lista de células vivas para o Controller Agent e mensagens de notificação sobre o estado do jogo (quando pausado). Além disso, garantir a atualização contínua da interface gráfica.           |                 | [GameUIAgent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/7)           |
 | Luciano Ricardo   | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
 | Luiz Henrique     |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Natan Tavares     | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
@@ -166,32 +166,41 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Ingrid Carvalho</summary>
 
 ### Lições Aprendidas  
-- 
+Aprendi a trabalhar com integração  de agentes usando JADE, como fazer estruturação de mensagens e ontologias para estabelecer uma boa comunicação entre os agentes
 
 ### Percepções  
-- 
+Projetos baseados em paradigmas multiagentes oferecem flexibilidade, mas a depuração pode ser mais complexa devido às interações assíncronas.
 
 ### Contribuições e Fragilidades  
-- 
+- Contribuições: 
+  - Implementação de comportamentos como Play, Pause, Reset e Clear, promovendo funcionalidade e controle no Game of Life.
+  - Integração de agentes com a interface gráfica, permitindo interação direta com o usuário.
+- Fragilidades:
+  - Aprender a trabalhar com uma linguagem que não tenho prática e com um paradigma novo.
 
 ### Trabalhos Futuros  
-- 
+Melhorar o tratamento de erros para mensagens entre agentes, garantindo maior robustez.
 
 </details>
 
 <details><summary>Lais Portela</summary>
 
-### Lições Aprendidas  
-- 
+### Lições Aprendidas
 
-### Percepções  
-- 
+Aprendi na prática como funciona o uso de múltiplos agentes (Multiagents) utilizando Jade e Java, aprofundando meu entendimento sobre a interação entre agentes em sistemas complexos.
+### Percepções
+O trabalho me proporcionou uma compreensão mais profunda sobre a aplicação de sistemas multiagente, especialmente em jogos como o Game of Life, onde a coordenação entre agentes é essencial para o funcionamento correto do jogo.
 
-### Contribuições e Fragilidades  
-- 
+### Contribuições e Fragilidades
 
-### Trabalhos Futuros  
-- 
+- Contribuições: 
+  - Implementação de comportamentos como Play, Pause, Reset e Clear, promovendo funcionalidade e controle no Game of Life. 
+  - Integração de agentes com a interface gráfica, permitindo interação direta com o usuário.
+- Fragilidades:
+  - Enfrentei algumas dificuldades com o uso do framework Java, já que não é uma linguagem com a qual estou tão familiarizada, e fazia tempo que não trabalhava com esse framework.
+
+### Trabalhos Futuros
+Para melhorar a experiência no jogo, seria bom implementar uma funcionalidade de "Próximo Passo" (Next), permitindo que os usuários vejam a execução do Game of Life passo a passo, facilitando o entendimento do processo.
 
 </details>
 
