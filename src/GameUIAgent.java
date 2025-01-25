@@ -336,9 +336,8 @@ public class GameUIAgent extends Agent {
 
 
     private class UpdateUI extends CyclicBehaviour {
-    // Quando receber esta mensagem, deverá atualizar a interface com os agentes vivos e o número do ciclo
-        private int cycleNum = 0; // Número do ciclo atual
-        private int aliveCellsCount = 0; // Contador de células vivas
+        private int cycleNum = 0; 
+        private int aliveCellsCount = 0; 
 
         @Override
         public void action() {
@@ -365,7 +364,6 @@ public class GameUIAgent extends Agent {
                                 }
                             }
 
-                            // Atualizar o contador de células vivas
                             aliveCellsCount = ActiveCellsList.size();
 
                             // Atualizar a interface 
@@ -374,7 +372,6 @@ public class GameUIAgent extends Agent {
                             System.out.println("Lista de Células Vivas: " + ActiveCellsList);
 
                             // Atualizar interface gráfica
-                            GameUI gameUI = (GameUI) myAgent.getArguments()[0];
                             gameUI.onUIUpdate(cycleNum, aliveCellsCount);
                         } else {
                             System.err.println("Erro: Mensagem recebida com conteúdo nulo.");
