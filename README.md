@@ -118,16 +118,16 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Fellipe Pereira</summary>
 
 ### Lições Aprendidas  
-- 
+- Compreendi melhor como mensagens ACL são trocadas entre agentes para coordenação e tomada de decisões.
 
 ### Percepções  
-- 
+- A implementação evidenciou a dificuldade de sincronizar ações entre agentes de forma eficiente, mas mostrou o potencial do sistema para aplicações descentralizadas.
 
 ### Contribuições e Fragilidades  
-- 
+- Contribuí principalmente no desenvolvimento da lógica dos agentes e na implementação das regras de comunicação, como o registro das coordenadas e a verificação de vizinhos. A maior dificuldade foi entender como os agentes se comunicam e como a interface gráfica interage com eles.
 
 ### Trabalhos Futuros  
-- 
+- Otimizar a comunicação entre agentes para melhorar a performance em grades maiores.
 
 </details>
 
