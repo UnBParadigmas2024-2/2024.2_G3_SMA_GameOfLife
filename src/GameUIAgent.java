@@ -69,7 +69,8 @@ public class GameUIAgent extends Agent {
         initializeControllerAgent();
         controllerAgentAID = searchControllerAgentInDF();
 
-        
+        addBehaviour(new UpdateUI());
+
     }
 
     private void initializeControllerAgent() {
@@ -283,19 +284,25 @@ public class GameUIAgent extends Agent {
         // De acordo com o jogo game of live , se ele pausar e dar reset também pode ativar
         public void action() {
             System.out.println("Clear grid behavior ativado!");
-
+    
+            // Verificar se o jogo já foi iniciado e se não está pausado
             if (isGameStarted && !isGamePause) {
-                System.out.println("O jogo já foi iniciado. Botão 'Clean' não deve ser funcionar");
+                System.out.println("O jogo já foi iniciado. Botão 'Clean' não deve funcionar.");
                 return;
             }
-
+    
             // Zerar a lista de células vivas
             ActiveCellsList.clear();
             InicialActiveCellsList.clear();
-
-            GameUI gameUI = (GameUI) myAgent.getArguments()[0]; 
-            gameUI.clearAllCells();
-
+    
+            // Limpar todas as células no GameUI
+            try {
+                gameUI.clearAllCells();
+            } catch (Exception e) {
+                System.err.println("Erro ao limpar as células: " + e.getMessage());
+                e.printStackTrace();
+            }
+    
             System.out.println("Grade limpa, ActiveCellsList zerada, e interface atualizada!");
         }
     }

@@ -60,6 +60,7 @@ public class GameUI extends JFrame {
     }
 
     public void setAgent(GameUIAgent agent) {
+
         this.agent = agent;
     }
 
@@ -84,12 +85,24 @@ public class GameUI extends JFrame {
     }
 
     void clearAllCells() {
+        if (gridPanel == null) {
+            System.err.println("Erro: gridPanel não foi inicializado!");
+            return;
+        }
+    
+        if (cellStates == null) {
+            System.err.println("Erro: cellStates não foi inicializado!");
+            return;
+        }
+    
         // Zerar todas as células
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 cellStates[i][j] = false;
                 JButton cellButton = (JButton) gridPanel.getComponent(i * gridSize + j);
-                cellButton.setBackground(Color.WHITE);  // Limpa a célula para branco
+                if (cellButton != null) {
+                    cellButton.setBackground(Color.WHITE);  // Limpa a célula para branco
+                }
             }
         }
     }
