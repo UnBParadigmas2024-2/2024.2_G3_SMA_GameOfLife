@@ -16,20 +16,25 @@ public class CellAgent extends Agent {
     @Override
     protected void setup() {
         System.out.println(getLocalName() + " inicializado.");
-        registerOnDF(); // Cadastra no DF
 
-        // Adiciona os comportamentos da célula
-        addBehaviour(new SetInitialState());
+        // Recupera as coordenadas do agente dos argumentos
+        Object[] args = getArguments();
+        int x = (args != null && args.length > 0) ? Integer.parseInt(args[0].toString()) : 0;
+        int y = (args != null && args.length > 1) ? Integer.parseInt(args[1].toString()) : 0;
+
+        // Registra no DF com as coordenadas
+        registerOnDF(x, y);
+
+        isAlive = Math.random() < 0.3; // Define aleatoriamente o estado inicial
         addBehaviour(new VerifyNeighbor());
     }
 
-    private void registerOnDF() {
+    private void registerOnDF(int x, int y) {
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
         sd.setType("CellAgent");
-        // sd.setName(x + "," + y); - Precisa adicionar as cordenadas da celulas quando se registrar
-        sd.setName(getLocalName());
+        sd.setName(x + "," + y); // Adiciona as coordenadas da célula ao nome do serviço
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
