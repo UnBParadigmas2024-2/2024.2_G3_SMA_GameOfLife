@@ -11,59 +11,44 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.UnreadableException;
+
+import jade.wrapper.AgentController;
+import jade.wrapper.ContainerController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.awt.Point;
-import java.io.IOException;
-import java.io.Serializable;
 
 
 public class GameUIAgent extends Agent {
     private static final long serialVersionUID = 1L;
     private GameUI gameUI;
-
+    private AID controllerAgentAID = null;
     private boolean isGameStarted = false;
     private boolean isGamePause = false;
 
-    private List<Point> ActiveCellsList = new ArrayList<>();
-    private List<Point> InicialActiveCellsList = new ArrayList<>();
+    private List<String> ActiveCellsList = new ArrayList<>();
+    private List<String> InicialActiveCellsList = new ArrayList<>();
     
-    public Serializable getActiveCellsListSerializable() {
-        if (ActiveCellsList == null) {
-            ActiveCellsList = new ArrayList<>();
-        }
-        return (Serializable) ActiveCellsList;
-    }
-
-    public List<Point> getActiveCellsList() {
+    public List<String> getActiveCellsList() {
         if (ActiveCellsList == null) {
             ActiveCellsList = new ArrayList<>();
         }
         return ActiveCellsList;
     }
-    public List<Point> getInicialActiveCellsList() {
+    public List<String> getInicialActiveCellsList() {
         if (InicialActiveCellsList == null) {
             InicialActiveCellsList = new ArrayList<>();
         }
         return InicialActiveCellsList;
     }
 
-    public Serializable getInicialActiveCellsListSerializable() {
-        if (InicialActiveCellsList == null) {
-            InicialActiveCellsList = new ArrayList<>();
-        }
-        return (Serializable) InicialActiveCellsList;
-    }
-
-
     protected void setup() {
         // Registrar o agente no DF
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
-        sd.setType("UIAgent");
+        sd.setType("game-ui-agent");
         sd.setName("GameUIAgent");
         dfd.addServices(sd);
         try {
@@ -80,7 +65,50 @@ public class GameUIAgent extends Agent {
             gameUI.setAgent(this); // Passa uma referência do agente para a UI
         });
         
-        //TO-DO: Inicializar o ControllerAgent
+        //Inicializar o ControllerAgent
+        initializeControllerAgent();
+        controllerAgentAID = searchControllerAgentInDF();
+
+        
+    }
+
+    private void initializeControllerAgent() {
+        try {
+            // Verifica se o ControllerAgent já está registrado no DF
+            AID controllerAgentAID = searchControllerAgentInDF();
+            
+            if (controllerAgentAID == null) {
+                // Se o ControllerAgent não foi encontrado no DF, cria um novo
+                ContainerController container = getContainerController(); 
+                Object[] controllerArgs = new Object[] { getAID() }; 
+                AgentController controllerAgent = container.createNewAgent(
+                    "ControllerAgent",
+                    "src.ControllerAgent",
+                    controllerArgs
+                );
+                controllerAgent.start();
+                System.out.println("ControllerAgent inicializado com sucesso.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erro ao inicializar o ControllerAgent.");
+        }
+    }
+
+    private AID searchControllerAgentInDF() {
+        DFAgentDescription template = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("controller-agent"); // Alinha com o tipo registrado no ControllerAgent
+        template.addServices(sd);
+        try {
+            DFAgentDescription[] results = DFService.search(this, template);
+            if (results.length > 0) {
+                return results[0].getName(); // Retorna o AID do primeiro agente encontrado
+            }
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     protected void takeDown() {
@@ -119,65 +147,93 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Play
     private class PlayBehavior extends OneShotBehaviour {
-        //TO-DO: Mandar a ActiveCellsList para o ControllerAgent que irá criar os agentes para cada célula
+        //T Mandar a ActiveCellsList para o ControllerAgent que irá criar os agentes para cada célula
     	// e iniciar os ciclos do jogo. OK
     	// O valor inicial da ActiveCellsList deve ser salva em outra lista para ser usada no reset InicialActiveCellsList OK
-    	// O botão "Play" só deve ser renderizado se o jogo não tiver sido começado
-    	
+    	// O botão "Play" só deve ser renderizado se o jogo não tiver sido começado ok
+    
     	// Estrutura da mensagem
     	// Tipo: ACL.INFORM OK
     	// ContentObject: ActiveCellsList OK
-    	// Destinatário: ControllerAgent (Pegar pelo DF)
+    	// Destinatário: ControllerAgent (Pegar pelo DF) ok
         public void action() {
 
-            if (isGameStarted) {
-                System.out.println("O jogo já foi iniciado. Botão 'Play' não deve ser renderizado novamente.");
-                return;
-            }
-    
-            // Marcar o jogo como iniciado
-            isGameStarted = true;
-            isGamePause = false;
-    
 
-            // Copiar o conteúdo da ActiveCellsList para InicialActiveCellsList
-            ((GameUIAgent) myAgent).getInicialActiveCellsList().addAll(((GameUIAgent) myAgent).getActiveCellsList());
-          
-            // Criar a mensagem ACL para enviar a ActiveCellsList ao ControllerAgent
-            ACLMessage playMessage = new ACLMessage(ACLMessage.INFORM);
-            playMessage.setOntology("startGameCycle");  // Nome da ontologia
-            try {
-                playMessage.setContentObject(((GameUIAgent) myAgent).getActiveCellsListSerializable());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }  // Adicionando a ActiveCellsList
+            if (controllerAgentAID == null) {
+                controllerAgentAID = searchControllerAgentInDF();
+            }
+            if (controllerAgentAID != null) {
+
+                try{
+
+                
+                    if (isGameStarted) {
+                        System.out.println("O jogo já foi iniciado. Botão 'Play' não deve ser renderizado novamente.");
+                        return;
+                    }
             
-            // Criar AID para o ControllerAgent e adicionar como receptor
-            AID controllerAID = new AID("ControllerAgent", AID.ISLOCALNAME);
-            playMessage.addReceiver(controllerAID);
-    
-            // Enviar a mensagem 
-            myAgent.send(playMessage);
-    
-            System.out.println("Play behavior ativado!");
+                    // Marcar o jogo como iniciado
+                    isGameStarted = true;
+                    isGamePause = false;
+            
+                    // Copiar o conteúdo da ActiveCellsList para InicialActiveCellsList
+                    ((GameUIAgent) myAgent).getInicialActiveCellsList().addAll(((GameUIAgent) myAgent).getActiveCellsList());
+                
+
+                    ACLMessage playMessage = new ACLMessage(ACLMessage.INFORM);
+                    playMessage.setOntology("ActiveCellsList");  // Nome da ontologia atualizado
+            
+                    // Obter a lista de células ativas e convertê-la para o formato esperado pelo ControllerAgent
+                    List<String> activeCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
+                    
+                    StringBuilder content = new StringBuilder();
+                    for (String cell : activeCellsList) {
+                        content.append(cell).append(";");
+                    }
+            
+                    if (content.length() > 0) {
+                        content.deleteCharAt(content.length() - 1);
+                    }
+            
+                    playMessage.setContent(content.toString());
+                    playMessage.addReceiver(controllerAgentAID);  // Usando a variável global controllerAgentAID
+                    myAgent.send(playMessage);
+            
+                    System.out.println("Play behavior ativado! ActiveCellsList enviada para o ControllerAgent.");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
     // Behavior para o botão Pausar
     private class PauseBehavior extends OneShotBehaviour {
-    	//TO-DO: Mandar mensagem para o ControllerAgent informando para pausar o comportamento ciclico
+    	// Mandar mensagem para o ControllerAgent informando para pausar o comportamento ciclico
     	// que atualiza os ciclos e agentes vivos/mortos OK
         public void action() {
-            isGamePause = true;
-            isGameStarted = false;
-            // Criando a mensagem ACL
-            ACLMessage pauseMessage = new ACLMessage(ACLMessage.INFORM);
-            pauseMessage.setOntology("pauseCycleUpdate");  // nome da mensagem
-            // Criando o AID diretamente com o nome conhecido
-            AID controllerAID = new AID("ControllerAgent", AID.ISLOCALNAME); // nome do agente
-            pauseMessage.addReceiver(controllerAID);
-            myAgent.send(pauseMessage);
-            
-            System.out.println("Pause behavior ativado!");
+
+            if (controllerAgentAID == null) {
+                controllerAgentAID = searchControllerAgentInDF();
+            }
+            if (controllerAgentAID != null) {
+
+                try{
+
+                    isGamePause = true;
+                    isGameStarted = false;
+                    ACLMessage pauseMessage = new ACLMessage(ACLMessage.INFORM);
+                    pauseMessage.setOntology("pauseCycleUpdate");  // nome da mensagem - Não achamos como Controller Agent lida com isso
+                    pauseMessage.addReceiver(controllerAgentAID);
+                    myAgent.send(pauseMessage);
+                    
+                    System.out.println("Pause behavior ativado!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+           
         }
     }
 
@@ -186,30 +242,44 @@ public class GameUIAgent extends Agent {
         // TO-DO: enviar mensagem para o ControllerAgent para reiniciar os ciclos
         // e utilizar o valor de InicialActiveCellsList para criar os agentes vivos
         public void action() {
-            // Criando a mensagem ACL
-            ACLMessage resetMessage = new ACLMessage(ACLMessage.INFORM);
-            resetMessage.setOntology("resetCycle");  // nome da mensagem
-            // Criando o AID diretamente com o nome conhecido
-
-            try {
-                resetMessage.setContentObject(((GameUIAgent) myAgent).getInicialActiveCellsListSerializable());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }  // Adicionando a ActiveCellsList
-            AID controllerAID = new AID("ControllerAgent", AID.ISLOCALNAME); // nome do agente
-            resetMessage.addReceiver(controllerAID);
-            myAgent.send(resetMessage);
+            if (controllerAgentAID == null) {
+                controllerAgentAID = searchControllerAgentInDF();
+            }
             
-            System.out.println("Reset behavior ativado!");
+            if (controllerAgentAID != null) {
+                try {
+                    // Criar a mensagem ACL
+                    ACLMessage resetMessage = new ACLMessage(ACLMessage.INFORM);
+                    resetMessage.setOntology("ActiveCellsList");  // colocamos ActiveCellsList, pois não achamos um pra reset em Controller Agent
+                    
+                    List<String> activeCells = ((GameUIAgent) myAgent).getInicialActiveCellsList();
+                    ActiveCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
+
+                    
+                    // Converter a lista de células para o formato esperado pela função do ControllerAgent
+                    StringBuilder contentBuilder = new StringBuilder();
+                    for (String cell : activeCells) {
+                        contentBuilder.append(cell).append(";");
+                    }
+                    
+                    resetMessage.setContent(contentBuilder.toString());
+                    resetMessage.addReceiver(controllerAgentAID);
+                    myAgent.send(resetMessage);
+                    
+                    System.out.println("Reset behavior ativado!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("ControllerAgent não encontrado no DF.");
+            }
         }
     }
 
     // Behavior para o botão Limpar
     private class ClearGridBehavior extends OneShotBehaviour {
-    	//TO-DO: O botão "limpar" só deve estar renderizado antes do jogo começar  
+    	// O botão "limpar" só deve estar renderizado antes do jogo começar  
     	// Ao apertar ele, a ActiveCellsList deve ser zerada
-
-
         // De acordo com o jogo game of live , se ele pausar e dar reset também pode ativar
         public void action() {
             System.out.println("Clear grid behavior ativado!");
@@ -223,12 +293,6 @@ public class GameUIAgent extends Agent {
             ActiveCellsList.clear();
             InicialActiveCellsList.clear();
 
-            // Enviar mensagem para o ControllerAgent (se necessário)
-            ACLMessage clearMessage = new ACLMessage(ACLMessage.INFORM);
-            clearMessage.setOntology("clearGrid"); // Nome da mensagem
-            clearMessage.addReceiver(new AID("ControllerAgent", AID.ISLOCALNAME));
-            myAgent.send(clearMessage);
-
             GameUI gameUI = (GameUI) myAgent.getArguments()[0]; 
             gameUI.clearAllCells();
 
@@ -236,7 +300,8 @@ public class GameUIAgent extends Agent {
         }
     }
 
-    // Behavior para a seleção de células
+
+
     private class CellSelectionBehavior extends OneShotBehaviour {
         // TO-DO: Atualizar uma lista (ActiveCellsList) de células que estão ativadas.
         // Adicionar na lista quando for selecionada e tirar da lista quando for desselecionada
@@ -249,76 +314,75 @@ public class GameUIAgent extends Agent {
         }
     
         public void action() {
-            // Adicionar ou remover a célula da ActiveCellsList
-            if (((GameUIAgent) myAgent).getActiveCellsList().contains(new Point(x, y))) {
-                ((GameUIAgent) myAgent).getActiveCellsList().remove(new Point(x, y));
+            String cell = x + "," + y;
+    
+            List<String> activeCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
+            if (activeCellsList.contains(cell)) {
+                activeCellsList.remove(cell);
             } else {
-                ((GameUIAgent) myAgent).getActiveCellsList().add(new Point(x, y));
+                activeCellsList.add(cell);
             }
     
             System.out.println("Célula selecionada: (" + x + ", " + y + ")");
         }
     }
     
-    
+
+
     private class UpdateUI extends CyclicBehaviour {
-    	//TO-DO: Ficará em ciclo esperando uma mensagem de atualização do ControllerAgent
-    	// Essa mensagem deverá conter uma lista dos agentes vivos (ActiveCellsList) e o "cicleNum", número do ciclo atual
-    	// Quando receber esta mensagem, deverá atualizar a interface com os agentes vivos e o número do ciclo
+    // Quando receber esta mensagem, deverá atualizar a interface com os agentes vivos e o número do ciclo
         private int cycleNum = 0; // Número do ciclo atual
         private int aliveCellsCount = 0; // Contador de células vivas
-    
+
         @Override
         public void action() {
-            // Esperar por mensagens do tipo ACL.INFORM
             ACLMessage message = myAgent.receive();
             if (message != null) {
                 if ("updateUI".equals(message.getOntology())) {
                     try {
-                        // Deserializar o conteúdo da mensagem
-                        Object contentObject = message.getContentObject();
-    
-                        if (contentObject instanceof Object[]) {
-                            Object[] content = (Object[]) contentObject;
-    
-                            // Verificar e fazer cast seguro da lista de células vivas
-                            if (content[0] instanceof List) {
-                                @SuppressWarnings("unchecked") // Suprimir warnings de cast não verificado
-                                List<Point> activeCells = (List<Point>) content[0];
-                                cycleNum = (int) content[1]; // Número do ciclo atual
-    
-                                // Atualizar a lista ActiveCellsList
-                                ActiveCellsList.clear();
-                                ActiveCellsList.addAll(activeCells);
-    
-                                // Atualizar o contador de células vivas
-                                aliveCellsCount = ActiveCellsList.size();
-    
-                                // Atualizar a interface (exemplo de impressão no console)
-                                System.out.println("Ciclo Atual: " + cycleNum);
-                                System.out.println("Células Vivas: " + aliveCellsCount);
-    
-                                // Se necessário, atualizar interface gráfica
-                                // updateGraphicUI(ActiveCellsList, cycleNum, aliveCellsCount);
-                                GameUI gameUI = (GameUI) myAgent.getArguments()[0]; 
-                                gameUI.onUIUpdate(cycleNum, aliveCellsCount);
-
-                            } else {
-                                System.err.println("Erro: O conteúdo da mensagem não contém uma lista válida de células.");
+                        String content = message.getContent();
+                        if (content != null) {
+                            // Parsear o conteúdo no formato "cycleNum=<num>;aliveCells=<nome1,nome2,...>"
+                            String[] parts = content.split(";");
+                            for (String part : parts) {
+                                if (part.startsWith("cycleNum=")) {
+                                    cycleNum = Integer.parseInt(part.split("=")[1]);
+                                } else if (part.startsWith("aliveCells=")) {
+                                    String cells = part.split("=")[1];
+                                    if (!cells.isEmpty()) {
+                                        String[] cellNames = cells.split(",");
+                                        ActiveCellsList.clear();
+                                        ActiveCellsList.addAll(Arrays.asList(cellNames));
+                                    } else {
+                                        ActiveCellsList.clear(); // Nenhuma célula viva
+                                    }
+                                }
                             }
+
+                            // Atualizar o contador de células vivas
+                            aliveCellsCount = ActiveCellsList.size();
+
+                            // Atualizar a interface 
+                            System.out.println("Ciclo Atual: " + cycleNum);
+                            System.out.println("Células Vivas: " + aliveCellsCount);
+                            System.out.println("Lista de Células Vivas: " + ActiveCellsList);
+
+                            // Atualizar interface gráfica
+                            GameUI gameUI = (GameUI) myAgent.getArguments()[0];
+                            gameUI.onUIUpdate(cycleNum, aliveCellsCount);
                         } else {
-                            System.err.println("Erro: O conteúdo da mensagem não é um array de objetos.");
+                            System.err.println("Erro: Mensagem recebida com conteúdo nulo.");
                         }
-                    } catch (UnreadableException e) {
-                        System.err.println("Erro ao desserializar o conteúdo da mensagem: " + e.getMessage());
+                    } catch (Exception e) {
+                        System.err.println("Erro ao processar a mensagem: " + e.getMessage());
                     }
                 } else {
                     System.out.println("Mensagem com ontologia inesperada recebida: " + message.getOntology());
                 }
             } else {
-                // Bloqueio para evitar consumo excessivo de recursos
                 block();
             }
         }
     }
+
 }
