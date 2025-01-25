@@ -18,6 +18,8 @@ public class CellAgent extends Agent {
     	//TO-DO: Irá esperar a mensagem do ControllerAgent dizendo o estado inicial
 		// de acordo com a mensagem, irá mudar a variável "isAlive"
 		// se estiver morto, se descadastra do DF
+		// TO-DO: checar se o ReceiverBehaviour eh melhor que o CyclicBehaviour ou
+		// sobrescrever o metodo done pq esse cara so é executado uam vez
         public void action() {
             
         }
