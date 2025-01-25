@@ -148,7 +148,7 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Play
     private class PlayBehavior extends OneShotBehaviour {
-        //T Mandar a ActiveCellsList para o ControllerAgent que irá criar os agentes para cada célula
+        //Mandar a ActiveCellsList para o ControllerAgent que irá criar os agentes para cada célula
     	// e iniciar os ciclos do jogo. OK
     	// O valor inicial da ActiveCellsList deve ser salva em outra lista para ser usada no reset InicialActiveCellsList OK
     	// O botão "Play" só deve ser renderizado se o jogo não tiver sido começado ok
@@ -211,7 +211,7 @@ public class GameUIAgent extends Agent {
     // Behavior para o botão Pausar
     private class PauseBehavior extends OneShotBehaviour {
     	// Mandar mensagem para o ControllerAgent informando para pausar o comportamento ciclico
-    	// que atualiza os ciclos e agentes vivos/mortos OK
+    	// que atualiza os ciclos e agentes vivos/mortos 
         public void action() {
 
             if (controllerAgentAID == null) {
@@ -240,7 +240,7 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Reset
     private class ResetBehavior extends OneShotBehaviour {
-        // TO-DO: enviar mensagem para o ControllerAgent para reiniciar os ciclos
+        // enviar mensagem para o ControllerAgent para reiniciar os ciclos
         // e utilizar o valor de InicialActiveCellsList para criar os agentes vivos
         public void action() {
             if (controllerAgentAID == null) {
@@ -279,8 +279,8 @@ public class GameUIAgent extends Agent {
 
     // Behavior para o botão Limpar
     private class ClearGridBehavior extends OneShotBehaviour {
-    	// O botão "limpar" só deve estar renderizado antes do jogo começar  
-    	// Ao apertar ele, a ActiveCellsList deve ser zerada
+    	// O botão "limpar" só deve estar renderizado antes do jogo começar
+    	// Ao apertar ele, a ActiveCellsList deve ser zerada 
         // De acordo com o jogo game of live , se ele pausar e dar reset também pode ativar
         public void action() {
             System.out.println("Clear grid behavior ativado!");
@@ -295,7 +295,6 @@ public class GameUIAgent extends Agent {
             ActiveCellsList.clear();
             InicialActiveCellsList.clear();
     
-            // Limpar todas as células no GameUI
             try {
                 gameUI.clearAllCells();
             } catch (Exception e) {
@@ -310,7 +309,7 @@ public class GameUIAgent extends Agent {
 
 
     private class CellSelectionBehavior extends OneShotBehaviour {
-        // TO-DO: Atualizar uma lista (ActiveCellsList) de células que estão ativadas.
+        // Atualizar uma lista (ActiveCellsList) de células que estão ativadas.
         // Adicionar na lista quando for selecionada e tirar da lista quando for desselecionada
         private final int x;
         private final int y;
