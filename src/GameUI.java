@@ -2,7 +2,8 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
-
+import java.util.List;
+import java.util.ArrayList;
 public class GameUI extends JFrame {
     private JButton startButton, pauseButton, resetButton, clearButton;
     private JLabel cycleLabel, aliveCellsLabel;
@@ -60,6 +61,7 @@ public class GameUI extends JFrame {
     }
 
     public void setAgent(GameUIAgent agent) {
+
         this.agent = agent;
     }
 
@@ -82,4 +84,59 @@ public class GameUI extends JFrame {
             System.err.println("Agente não está definido!");
         }
     }
+
+    void clearAllCells() {
+        if (gridPanel == null) {
+            System.err.println("Erro: gridPanel não foi inicializado!");
+            return;
+        }
+    
+        if (cellStates == null) {
+            System.err.println("Erro: cellStates não foi inicializado!");
+            return;
+        }
+    
+        // Zerar todas as células
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                cellStates[i][j] = false;
+                JButton cellButton = (JButton) gridPanel.getComponent(i * gridSize + j);
+                if (cellButton != null) {
+                    cellButton.setBackground(Color.WHITE);  // Limpa a célula para branco
+                }
+            }
+        }
+    }
+
+    public void onUIUpdate(int newCycleNum, int newAliveCellsCount, List<String> activeCellsList) {
+        updateInterface(newCycleNum, newAliveCellsCount);
+        updateActiveCells(activeCellsList);  // Atualiza as células ativas na UI
+    }
+    
+
+    private void updateInterface(int cycleNum, int aliveCellsCount) {
+        cycleLabel.setText("Ciclo: " + cycleNum);
+        aliveCellsLabel.setText("Células Vivas: " + aliveCellsCount);
+    }
+    
+    private void updateActiveCells(List<String> activeCellsList) {
+        // Zerar o estado de todas as células
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                JButton cellButton = (JButton) gridPanel.getComponent(i * gridSize + j);
+                cellButton.setBackground(Color.WHITE);  
+            }
+        }
+    
+        // Marcar as células ativas
+        for (String cellName : activeCellsList) {
+            String[] parts = cellName.split(",");
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            
+            JButton cellButton = (JButton) gridPanel.getComponent(x * gridSize + y);
+            cellButton.setBackground(Color.BLACK); 
+        }
+    }
+    
 }
