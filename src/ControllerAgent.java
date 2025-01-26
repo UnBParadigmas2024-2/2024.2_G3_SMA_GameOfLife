@@ -2,18 +2,13 @@ package src;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.FSMBehaviour;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import jade.content.ContentElement;
-import jade.content.lang.Codec;
-import jade.content.onto.Ontology;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.*;
 import jade.domain.FIPAException;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,24 +55,25 @@ public class ControllerAgent extends Agent {
         }
     }
 
-    private void createCellAgents(int width, int height) {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                String cellName = "CellAgent-" + x + "-" + y;
-                try {
-                    AgentController ac = 
-                        getContainerController().createNewAgent(cellName, "src.CellAgent", null);
-                    ac.start();
-
-                    AID aid = new AID(cellName, AID.ISLOCALNAME);
-                    cellAgents.add(aid);
-
-                } catch (StaleProxyException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+	    private void createCellAgents(int width, int height) {
+	        for (int x = 0; x < width; x++) {
+	            for (int y = 0; y < height; y++) {
+	                String cellName = "CellAgent-" + x + "-" + y;
+	                try {
+	                	Object[] args = {x, y};
+	                    AgentController ac = 
+	                        getContainerController().createNewAgent(cellName, "src.CellAgent", args);
+	                    ac.start();
+	
+	                    AID aid = new AID(cellName, AID.ISLOCALNAME);
+	                    cellAgents.add(aid);
+	
+	                } catch (StaleProxyException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+	    }
 
     private AID searchGameUIAgentInDF() {
         DFAgentDescription template = new DFAgentDescription();

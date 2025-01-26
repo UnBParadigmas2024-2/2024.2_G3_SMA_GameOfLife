@@ -86,15 +86,15 @@ Aqui está a tabela com os nomes em ordem alfabética:
 | Nome do Membro    | Contribuição                                                                                                                                                | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios                                                                                  |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
 | Amanda Nobre      |        Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                                       |           Excelente                                                                     | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
-| Fellipe Pereira   |                                                                                                                                                             |                                                                                | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
+| Fellipe Pereira   |        Desenvolvimento do agente célula responsável com comportamentos aplicados as regras do jogo e integração com agente controller | Excelente | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
 | Gabriel Sabanai   |                    Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                           |           Excelente                                                                     | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Guilherme Barbosa |                      Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                         |                Excelente                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
-| Ingrid Carvalho   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
-| Lais Portela      |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Ingrid Carvalho   | Desenvolvimento do GameUIAgent e atualização do GameUI: Controle dos botões "Pause", "Play", "Reset" e "Limpar", enviando a lista de células vivas para o Controller Agent e mensagens de notificação sobre o estado do jogo (quando pausado). Além disso, garantir a atualização contínua da interface gráfica. | |[GameUIAgent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/7)           |
+| Lais Portela      | Desenvolvimento do GameUIAgent e atualização do GameUI: Controle dos botões "Pause", "Play", "Reset" e "Limpar", enviando a lista de células vivas para o Controller Agent e mensagens de notificação sobre o estado do jogo (quando pausado). Além disso, garantir a atualização contínua da interface gráfica.           |                 | [GameUIAgent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/7)           |
 | Luciano Ricardo   | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
 | Luiz Henrique     | Implementamos agentes que representam células no *Game of Life*, atendendo aos critérios de aceitação estabelecidos: os agentes possuem dois estados (*vivo* e *morto*), definidos por um booleano `isAlive`, e mudam de estado conforme as regras do *Game of Life*. Inicialmente, as células começam no estado de *morto* e são capazes de se comunicar com seus vizinhos (*CellAgent*) para obter seus estados atuais, além de enviar seus estados atuais para eles. Os agentes também podem calcular e enviar seus próximos estados, baseados nos estados dos vizinhos, para o *ControllerAgent*. Além disso, atualizamos a documentação do projeto. |          | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
 | Natan Tavares     | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
-| Pablo Christianno |                                                                                                                                                             |                                                                                | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)   |
+ Pablo Christianno |  Desenvolvimento do agente célula responsável com comportamentos aplicados as regras do jogo e integração com agente controller | Excelente | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
 
 ## Outros 
 Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a lições aprendidas, contribuições, percepções, fragilidades e trabalhos futuros.
@@ -118,16 +118,16 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Fellipe Pereira</summary>
 
 ### Lições Aprendidas  
-- 
+- Compreendi melhor como mensagens ACL são trocadas entre agentes para coordenação e tomada de decisões.
 
 ### Percepções  
-- 
+- A implementação evidenciou a dificuldade de sincronizar ações entre agentes de forma eficiente, mas mostrou o potencial do sistema para aplicações descentralizadas.
 
 ### Contribuições e Fragilidades  
-- 
+- Contribuí principalmente no desenvolvimento da lógica dos agentes e na implementação das regras de comunicação, como o registro das coordenadas e a verificação de vizinhos. A maior dificuldade foi entender como os agentes se comunicam e como a interface gráfica interage com eles.
 
 ### Trabalhos Futuros  
-- 
+- Otimizar a comunicação entre agentes para melhorar a performance em grades maiores.
 
 </details>
 
@@ -166,32 +166,41 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Ingrid Carvalho</summary>
 
 ### Lições Aprendidas  
-- 
+Aprendi a trabalhar com integração  de agentes usando JADE, como fazer estruturação de mensagens e ontologias para estabelecer uma boa comunicação entre os agentes
 
 ### Percepções  
-- 
+Projetos baseados em paradigmas multiagentes oferecem flexibilidade, mas a depuração pode ser mais complexa devido às interações assíncronas.
 
 ### Contribuições e Fragilidades  
-- 
+- Contribuições: 
+  - Implementação de comportamentos como Play, Pause, Reset e Clear, promovendo funcionalidade e controle no Game of Life.
+  - Integração de agentes com a interface gráfica, permitindo interação direta com o usuário.
+- Fragilidades:
+  - Aprender a trabalhar com uma linguagem que não tenho prática e com um paradigma novo.
 
 ### Trabalhos Futuros  
-- 
+Melhorar o tratamento de erros para mensagens entre agentes, garantindo maior robustez.
 
 </details>
 
 <details><summary>Lais Portela</summary>
 
-### Lições Aprendidas  
-- 
+### Lições Aprendidas
 
-### Percepções  
-- 
+Aprendi na prática como funciona o uso de múltiplos agentes (Multiagents) utilizando Jade e Java, aprofundando meu entendimento sobre a interação entre agentes em sistemas complexos.
+### Percepções
+O trabalho me proporcionou uma compreensão mais profunda sobre a aplicação de sistemas multiagente, especialmente em jogos como o Game of Life, onde a coordenação entre agentes é essencial para o funcionamento correto do jogo.
 
-### Contribuições e Fragilidades  
-- 
+### Contribuições e Fragilidades
 
-### Trabalhos Futuros  
-- 
+- Contribuições: 
+  - Implementação de comportamentos como Play, Pause, Reset e Clear, promovendo funcionalidade e controle no Game of Life. 
+  - Integração de agentes com a interface gráfica, permitindo interação direta com o usuário.
+- Fragilidades:
+  - Enfrentei algumas dificuldades com o uso do framework Java, já que não é uma linguagem com a qual estou tão familiarizada, e fazia tempo que não trabalhava com esse framework.
+
+### Trabalhos Futuros
+Para melhorar a experiência no jogo, seria bom implementar uma funcionalidade de "Próximo Passo" (Next), permitindo que os usuários vejam a execução do Game of Life passo a passo, facilitando o entendimento do processo.
 
 </details>
 
@@ -247,16 +256,16 @@ Futuras melhorias podem ser focadas na otimização da comunicação entre os ag
 <details><summary>Pablo Christianno</summary>
 
 ### Lições Aprendidas  
-- 
+- Entendi como de fato se dá a implementação de um agente inteligente, apesar de já ter estudado antes na disciplina de IA, não tive a oportunidade de praticar. Aprendi um pouco melhor o protocolo de comunicação FIPA.
 
 ### Percepções  
-- 
+- Gostei de trabalhar e adquirir experiência sobre sistemas multiagentes, não tive muita dificuldade, mas estou ciente de que pode ser bastante complexo sua implementação quando recursos de programação distribuída é aplicado.
 
 ### Contribuições e Fragilidades  
-- 
+- Ajudei na implementação do agente célula, que se comporta de acordo com as regras do jogo e é criado apartir do agente controlador. Como disse anteriormente não me depare com grande dificuldade, mas volta ou outra precisei consultar a documentação e investir o tempo para o entendimento.
 
 ### Trabalhos Futuros  
-- 
+- Acho que seria interessante pensa em uma forma de não precisar criar todos os agentes células de uma vez antes do jogo começar, vejo como uma área passível a otimização.
 
 </details>
 
