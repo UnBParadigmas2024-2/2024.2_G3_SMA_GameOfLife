@@ -15,16 +15,22 @@ public class CellAgent extends Agent {
 
     @Override
     protected void setup() {
-        System.out.println(getLocalName() + " inicializado.");
+        System.out.println(getLocalName() + ": inicializando CellAgent...");
 
         // Recupera as coordenadas do agente dos argumentos
         Object[] args = getArguments();
-        int x = (args != null && args.length > 0) ? Integer.parseInt(args[0].toString()) : 0;
-        int y = (args != null && args.length > 1) ? Integer.parseInt(args[1].toString()) : 0;
+        if (args == null || args.length < 2) {
+            System.err.println("Erro: Coordenadas não foram passadas para " + getLocalName());
+            doDelete(); // Finaliza o agente se os argumentos estiverem ausentes
+            return;
+        }
+        int x = Integer.parseInt(args[0].toString());
+        int y = Integer.parseInt(args[1].toString());
 
         // Registra no DF com as coordenadas
         registerOnDF(x, y);
 
+        System.out.println(getLocalName() + " iniciado nas coordenadas (" + x + ", " + y + "). Estado inicial: " + isAlive);
         isAlive = Math.random() < 0.3; // Define aleatoriamente o estado inicial
         addBehaviour(new VerifyNeighbor());
     }
@@ -34,7 +40,7 @@ public class CellAgent extends Agent {
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
         sd.setType("CellAgent");
-        sd.setName(x + "," + y); // Adiciona as coordenadas da célula ao nome do serviço
+        sd.setName(x + "," + y);
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
@@ -85,7 +91,11 @@ public class CellAgent extends Agent {
                 // Atualiza o registro no DF conforme o estado
                 if (previousState != isAlive) {
                     if (isAlive) {
-                        registerOnDF();
+                    	// Coordenadas do agente atual
+                        String[] position = getLocalName().split(",");
+                        int myX = Integer.parseInt(position[0].trim());
+                        int myY = Integer.parseInt(position[1].trim());
+                        registerOnDF(myX, myY);
                     } else {
                         deregisterFromDF();
                     }
