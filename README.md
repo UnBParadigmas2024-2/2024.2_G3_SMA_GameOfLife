@@ -86,15 +86,15 @@ Aqui está a tabela com os nomes em ordem alfabética:
 | Nome do Membro    | Contribuição                                                                                                                                                | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios                                                                                  |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
 | Amanda Nobre      |        Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                                       |           Excelente                                                                     | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
-| Fellipe Pereira   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Fellipe Pereira   |                                                                                                                                                             |                                                                                | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
 | Gabriel Sabanai   |                    Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                           |           Excelente                                                                     | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Guilherme Barbosa |                      Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                         |                Excelente                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Ingrid Carvalho   |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Lais Portela      |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Luciano Ricardo   | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
-| Luiz Henrique     |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Luiz Henrique     | Implementamos agentes que representam células no *Game of Life*, atendendo aos critérios de aceitação estabelecidos: os agentes possuem dois estados (*vivo* e *morto*), definidos por um booleano `isAlive`, e mudam de estado conforme as regras do *Game of Life*. Inicialmente, as células começam no estado de *morto* e são capazes de se comunicar com seus vizinhos (*CellAgent*) para obter seus estados atuais, além de enviar seus estados atuais para eles. Os agentes também podem calcular e enviar seus próximos estados, baseados nos estados dos vizinhos, para o *ControllerAgent*. Além disso, atualizamos a documentação do projeto. |          | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
 | Natan Tavares     | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
-| Pablo Christianno |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Pablo Christianno |                                                                                                                                                             |                                                                                | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)   |
 
 ## Outros 
 Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a lições aprendidas, contribuições, percepções, fragilidades e trabalhos futuros.
@@ -213,17 +213,18 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 
 <details><summary>Luiz Henrique</summary>
 
-### Lições Aprendidas  
-- 
+### Lições Aprendidas 
+
+A implementação das regras de transição de estado foi mais desafiadora do que o esperado, já que envolvia cálculos baseados em estados dinâmicos e interação contínua com o controlador, nesse processo pude me desenvolver bastante e aprender mais sobre o paradigma.
 
 ### Percepções  
-- 
+Percebi que a comunicação entre os agentes em sistemas distribuídos é um aspecto crucial para o sucesso do projeto, pois a troca de informações precisa ser rápida e confiável para garantir que as regras do *Game of Life* sejam aplicadas corretamente. Também entendi a importância de testar os estados iniciais e as transições entre estados de maneira eficiente, para evitar falhas lógicas que poderiam comprometer a execução do sistema. 
 
 ### Contribuições e Fragilidades  
-- 
+Minha contribuição foi a implementação do Cellagent, garantindo que cada célula pudesse calcular e enviar seu próximo estado com base nas regras do *Game of Life* e nos estados dos vizinhos. 
 
 ### Trabalhos Futuros  
-- 
+Futuras melhorias podem ser focadas na otimização da comunicação entre os agentes, buscando otimizar as trocas de dados. 
 
 </details>
 
