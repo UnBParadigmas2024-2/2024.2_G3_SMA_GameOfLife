@@ -246,16 +246,16 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Pablo Christianno</summary>
 
 ### Lições Aprendidas  
-- 
+- Entendi como de fato se dá a implementação de um agente inteligente, apesar de já ter estudado antes na disciplina de IA, não tive a oportunidade de praticar. Aprendi um pouco melhor o protocolo de comunicação FIPA.
 
 ### Percepções  
-- 
+- Gostei de trabalhar e adquirir experiência sobre sistemas multiagentes, não tive muita dificuldade, mas estou ciente de que pode ser bastante complexo sua implementação quando recursos de programação distribuída é aplicado.
 
 ### Contribuições e Fragilidades  
-- 
+- Ajudei na implementação do agente célula, que se comporta de acordo com as regras do jogo e é criado apartir do agente controlador. Como disse anteriormente não me depare com grande dificuldade, mas volta ou outra precisei consultar a documentação e investir o tempo para o entendimento.
 
 ### Trabalhos Futuros  
-- 
+- Acho que seria interessante pensa em uma forma de não precisar criar todos os agentes células de uma vez antes do jogo começar, vejo como uma área passível a otimização.
 
 </details>
 
