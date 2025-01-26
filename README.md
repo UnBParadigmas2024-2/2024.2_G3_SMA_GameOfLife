@@ -94,7 +94,7 @@ Aqui está a tabela com os nomes em ordem alfabética:
 | Luciano Ricardo   | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
 | Luiz Henrique     |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
 | Natan Tavares     | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
-| Pablo Christianno |                                                                                                                                                             |                                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Pablo Christianno |  Desenvolvimento do agente célula responsável com comportamentos aplicados as regras do jogo e integração com agente controller | Excelente | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
 
 ## Outros 
 Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a lições aprendidas, contribuições, percepções, fragilidades e trabalhos futuros.
@@ -118,16 +118,16 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Fellipe Pereira</summary>
 
 ### Lições Aprendidas  
-- 
+- Compreendi melhor como mensagens ACL são trocadas entre agentes para coordenação e tomada de decisões.
 
 ### Percepções  
-- 
+- A implementação evidenciou a dificuldade de sincronizar ações entre agentes de forma eficiente, mas mostrou o potencial do sistema para aplicações descentralizadas.
 
 ### Contribuições e Fragilidades  
-- 
+- Contribuí principalmente no desenvolvimento da lógica dos agentes e na implementação das regras de comunicação, como o registro das coordenadas e a verificação de vizinhos. A maior dificuldade foi entender como os agentes se comunicam e como a interface gráfica interage com eles.
 
 ### Trabalhos Futuros  
-- 
+- Otimizar a comunicação entre agentes para melhorar a performance em grades maiores.
 
 </details>
 
@@ -255,16 +255,16 @@ Para melhorar a experiência no jogo, seria bom implementar uma funcionalidade d
 <details><summary>Pablo Christianno</summary>
 
 ### Lições Aprendidas  
-- 
+- Entendi como de fato se dá a implementação de um agente inteligente, apesar de já ter estudado antes na disciplina de IA, não tive a oportunidade de praticar. Aprendi um pouco melhor o protocolo de comunicação FIPA.
 
 ### Percepções  
-- 
+- Gostei de trabalhar e adquirir experiência sobre sistemas multiagentes, não tive muita dificuldade, mas estou ciente de que pode ser bastante complexo sua implementação quando recursos de programação distribuída é aplicado.
 
 ### Contribuições e Fragilidades  
-- 
+- Ajudei na implementação do agente célula, que se comporta de acordo com as regras do jogo e é criado apartir do agente controlador. Como disse anteriormente não me depare com grande dificuldade, mas volta ou outra precisei consultar a documentação e investir o tempo para o entendimento.
 
 ### Trabalhos Futuros  
-- 
+- Acho que seria interessante pensa em uma forma de não precisar criar todos os agentes células de uma vez antes do jogo começar, vejo como uma área passível a otimização.
 
 </details>
 
