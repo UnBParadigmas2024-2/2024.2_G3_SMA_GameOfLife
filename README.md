@@ -85,10 +85,10 @@ Aqui está a tabela com os nomes em ordem alfabética:
 
 | Nome do Membro    | Contribuição                                                                                                                                                | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios                                                                                  |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| Amanda Nobre      |        Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                                       |           Excelente                                                                     | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Amanda Nobre      |        Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                                       |           Excelente                                                                     | [Feat: Adicionar Controller Agent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/6)           |
 | Fellipe Pereira   |        Desenvolvimento do agente célula responsável com comportamentos aplicados as regras do jogo e integração com agente controller | Excelente | [Cellagent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/8)           |
-| Gabriel Sabanai   |                    Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                           |           Excelente                                                                     | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
-| Guilherme Barbosa |                      Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                         |                Excelente                                                                | [Nome do PR](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/XX)           |
+| Gabriel Sabanai   |                    Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                           |           Excelente                                                                     | [Feat: Adicionar Controller Agent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/6)           |
+| Guilherme Barbosa |                      Desenvolvimento da camada de controle da aplicação, responsável por receber as regras de regras de negocio das informações dos 3 agentes e da manipular de forma que respeite a funcionalidade do jogo. Além disso, foi feita a complementada a respectiva documentação.                                                                                                                                         |                Excelente                                                                | [Feat: Adicionar Controller Agent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/6)           |
 | Ingrid Carvalho   | Desenvolvimento do GameUIAgent e atualização do GameUI: Controle dos botões "Pause", "Play", "Reset" e "Limpar", enviando a lista de células vivas para o Controller Agent e mensagens de notificação sobre o estado do jogo (quando pausado). Além disso, garantir a atualização contínua da interface gráfica. | |[GameUIAgent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/7)           |
 | Lais Portela      | Desenvolvimento do GameUIAgent e atualização do GameUI: Controle dos botões "Pause", "Play", "Reset" e "Limpar", enviando a lista de células vivas para o Controller Agent e mensagens de notificação sobre o estado do jogo (quando pausado). Além disso, garantir a atualização contínua da interface gráfica.           |                 | [GameUIAgent](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/7)           |
 | Luciano Ricardo   | Estruturação da base de agentes, documentação inicial do diagrama de comunicação entre agentes, criação da Interface Gráfica e estados iniciais dos agentes | Excelente                                                                      | [Esqueleto dos Agentes](https://github.com/UnBParadigmas2024-2/2024.2_G3_SMA_GameOfLife/pull/5) |
@@ -150,16 +150,20 @@ Abaixo consta os relatos de cada membro da equipe, no que se diz respeito a liç
 <details><summary>Guilherme Barbosa</summary>
 
 ### Lições Aprendidas  
-- 
+- Aprendi sobre o paradigma de agentes, como cada agente tem autonomia, objetivos específicos e como eles se comunicam por meio de mensagens.
 
 ### Percepções  
-- 
+- Percebi que o uso de agentes torna mais simples a expansão do sistema, já que basta criar mais agentes de célula se quiser um tabuleiro maior ou novas funcionalidades.
 
 ### Contribuições e Fragilidades  
-- 
+- Contribuições: 
+  - Criação do agente que centraliza a lógica do jogo;
+  - Contribuí para a parte que instacia dinamicamente agentes de célula de acordo com o tamanho do grid, facilitando a escalabilidade do jogo;
+  - Organização das mensagens usando ontologias específicas ("inicialState", 
+  "verifyIsAlive", "updateUI").
 
 ### Trabalhos Futuros  
-- 
+- Investigar estratégias de agrupamento de mensagens para tornar o jogo escalável a grids maiores.
 
 </details>
 
