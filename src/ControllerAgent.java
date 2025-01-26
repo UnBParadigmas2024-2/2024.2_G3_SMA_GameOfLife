@@ -2,18 +2,13 @@ package src;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.FSMBehaviour;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import jade.content.ContentElement;
-import jade.content.lang.Codec;
-import jade.content.onto.Ontology;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.*;
 import jade.domain.FIPAException;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
-
 import java.util.ArrayList;
 import java.util.List;
 

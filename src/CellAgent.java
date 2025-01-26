@@ -11,7 +11,7 @@ import jade.domain.FIPAException;
 public class CellAgent extends Agent {
 
     private static final long serialVersionUID = 1L;
-    private boolean isAlive = false; // Todas as células começam mortas
+    private boolean isAlive = false;
 
     @Override
     protected void setup() {
@@ -32,6 +32,7 @@ public class CellAgent extends Agent {
 
         System.out.println(getLocalName() + " iniciado nas coordenadas (" + x + ", " + y + "). Estado inicial: " + isAlive);
         addBehaviour(new VerifyNeighbor());
+        addBehaviour(new SetInitialState());
     }
 
     private void registerOnDF(int x, int y) {

@@ -3,7 +3,7 @@ package src;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.ArrayList;
+
 public class GameUI extends JFrame {
     private JButton startButton, pauseButton, resetButton, clearButton;
     private JLabel cycleLabel, aliveCellsLabel;

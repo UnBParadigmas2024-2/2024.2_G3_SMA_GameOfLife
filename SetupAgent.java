@@ -15,7 +15,7 @@ public class SetupAgent {
         profile.setParameter(Profile.MAIN_HOST, "localhost");
 
         // Habilitando a interface gráfica do JADE
-        // profile.setParameter(Profile.GUI, "true");
+        profile.setParameter(Profile.GUI, "true");
 
         // Criando o container principal
         ContainerController container = runtime.createMainContainer(profile);
