@@ -60,24 +60,25 @@ public class ControllerAgent extends Agent {
         }
     }
 
-    private void createCellAgents(int width, int height) {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                String cellName = "CellAgent-" + x + "-" + y;
-                try {
-                    AgentController ac = 
-                        getContainerController().createNewAgent(cellName, "src.CellAgent", null);
-                    ac.start();
-
-                    AID aid = new AID(cellName, AID.ISLOCALNAME);
-                    cellAgents.add(aid);
-
-                } catch (StaleProxyException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+	    private void createCellAgents(int width, int height) {
+	        for (int x = 0; x < width; x++) {
+	            for (int y = 0; y < height; y++) {
+	                String cellName = "CellAgent-" + x + "-" + y;
+	                try {
+	                	Object[] args = {x, y};
+	                    AgentController ac = 
+	                        getContainerController().createNewAgent(cellName, "src.CellAgent", args);
+	                    ac.start();
+	
+	                    AID aid = new AID(cellName, AID.ISLOCALNAME);
+	                    cellAgents.add(aid);
+	
+	                } catch (StaleProxyException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+	    }
 
     private AID searchGameUIAgentInDF() {
         DFAgentDescription template = new DFAgentDescription();
