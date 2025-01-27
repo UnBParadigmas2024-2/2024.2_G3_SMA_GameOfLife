@@ -63,7 +63,6 @@ public class CellAgent extends Agent {
             ACLMessage msg = receive();
             if (msg != null && msg.getOntology() != null && msg.getOntology().equals("newState")) {
                 String content = msg.getContent();
-                System.out.println(getLocalName() + ": Estado recebido (" + content + ")");
                 if (content != null && !content.isEmpty()) {
                     System.out.println(getLocalName() + ": Estado alterado para (" + content + ")");
                     setAlive(Boolean.parseBoolean(content));

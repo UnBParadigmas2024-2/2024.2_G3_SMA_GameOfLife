@@ -20,6 +20,15 @@ public class ControllerAgent extends Agent {
     private List<AID> cellAgents = new ArrayList<>();
     private AID gameUIAgentAID = null;
     private final int gridSize = 5;
+    private Boolean lock = true;
+
+    public Boolean getLock() {
+        return lock;
+    }
+
+    public void setLock(Boolean lock) {
+        this.lock = lock;
+    }
 
     @Override
     protected void setup() {
@@ -82,23 +91,30 @@ public class ControllerAgent extends Agent {
     private class SetAliveCells extends CyclicBehaviour {
         @Override
         public void action() {
-            ACLMessage msg = myAgent.receive();
+            ACLMessage msg = receive();
             if (msg != null && msg.getOntology() != null && msg.getOntology().equals("ActiveCellsList")) {
                 String content = msg.getContent();
                 List<String> aliveCells = parseAliveCells(content);
+
+                System.out.println("cellAgents(Todos): " + cellAgents);
+                System.out.println("aliveCells(Clicados): " + aliveCells);
 
                 for (AID cellAID : cellAgents) {
                     ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
                     informMsg.setOntology("newState");
                     informMsg.addReceiver(cellAID);
                     if (!aliveCells.contains(cellAID.getLocalName())) {
+                        System.out.println("MORTO: " + cellAID.getLocalName());
                         informMsg.setContent(String.valueOf("false"));
                     } else {
+                        System.out.println("VIVO: " + cellAID.getLocalName());
                         informMsg.setContent(String.valueOf("true"));
                     }
-                    myAgent.send(informMsg);
+                    send(informMsg);
                 }
-                return; // Mensagem tratada, encerra o comportamento
+                setLock(false);
+            } else {
+                block();
             }
         }
 
@@ -121,40 +137,42 @@ public class ControllerAgent extends Agent {
 
         @Override
         public void action() {
-            switch (step) {
-                case 0:
-                    // Solicita para todas as celulas se vai estar viva no proximo ciclo
-                    ACLMessage req = new ACLMessage(ACLMessage.REQUEST);
-                    req.setOntology("willStayAlive");
-                    req.setContent("No proximo ciclo, vai estar viva?");
+            if (!lock) {
+                switch (step) {
+                    case 0:
+                        // Solicita para todas as celulas se vai estar viva no proximo ciclo
+                        ACLMessage req = new ACLMessage(ACLMessage.REQUEST);
+                        req.setOntology("willStayAlive");
+                        req.setContent("No proximo ciclo, vai estar viva?");
 
-                    for (AID cell : cellAgents) {
-                        req.addReceiver(cell);
-                    }
-                    myAgent.send(req);
-                    step = 1;
-                    break;
-
-                case 1:
-                    ACLMessage reply = myAgent.receive();
-
-                    if (reply != null && reply.getOntology() != null
-                            && reply.getOntology().equals("willStayAliveResponse")) {
-                        responsesReceived++;
-
-                        System.out.println(reply.getSender().getLocalName() + " respondeu: " + reply.getContent());
-
-                        if ("true".equals(reply.getContent())) {
-                            aliveCellsInThisCycle.add(reply.getSender());
+                        for (AID cell : cellAgents) {
+                            req.addReceiver(cell);
                         }
-                        if (responsesReceived == cellAgents.size()) {
-                            handleCycleEnd();
-                            step = 0;
+                        myAgent.send(req);
+                        step = 1;
+                        break;
+
+                    case 1:
+                        ACLMessage reply = myAgent.receive();
+
+                        if (reply != null && reply.getOntology() != null
+                                && reply.getOntology().equals("willStayAliveResponse")) {
+                            responsesReceived++;
+
+                            System.out.println(reply.getSender().getLocalName() + " respondeu: " + reply.getContent());
+
+                            if ("true".equals(reply.getContent())) {
+                                aliveCellsInThisCycle.add(reply.getSender());
+                            }
+                            if (responsesReceived == cellAgents.size()) {
+                                handleCycleEnd();
+                                step = 0;
+                            }
+                        } else {
+                            block();
                         }
-                    } else {
-                        block();
-                    }
-                    break;
+                        break;
+                }
             }
         }
 
