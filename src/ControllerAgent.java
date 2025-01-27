@@ -10,7 +10,6 @@ import jade.domain.FIPAException;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ControllerAgent extends Agent {
@@ -90,7 +89,7 @@ public class ControllerAgent extends Agent {
 
                 for (AID cellAID : cellAgents) {
                     ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
-                    informMsg.setOntology("inicialState");
+                    informMsg.setOntology("newState");
                     informMsg.addReceiver(cellAID);
                     if (!aliveCells.contains(cellAID.getLocalName())) {
                         informMsg.setContent(String.valueOf("false"));
@@ -124,16 +123,27 @@ public class ControllerAgent extends Agent {
         public void action() {
             switch (step) {
                 case 0:
-                    requestAliveStatus();
+                    // Solicita para todas as celulas se vai estar viva no proximo ciclo
+                    ACLMessage req = new ACLMessage(ACLMessage.REQUEST);
+                    req.setOntology("willStayAlive");
+                    req.setContent("No proximo ciclo, vai estar viva?");
+
+                    for (AID cell : cellAgents) {
+                        req.addReceiver(cell);
+                    }
+                    myAgent.send(req);
                     step = 1;
                     break;
 
                 case 1:
                     ACLMessage reply = myAgent.receive();
+
                     if (reply != null && reply.getOntology() != null
-                            && reply.getOntology().equals("verifyIsAliveResponse")) {
+                            && reply.getOntology().equals("willStayAliveResponse")) {
                         responsesReceived++;
+
                         System.out.println(reply.getSender().getLocalName() + " respondeu: " + reply.getContent());
+
                         if ("true".equals(reply.getContent())) {
                             aliveCellsInThisCycle.add(reply.getSender());
                         }
@@ -148,25 +158,30 @@ public class ControllerAgent extends Agent {
             }
         }
 
-        private void requestAliveStatus() {
-            ACLMessage req = new ACLMessage(ACLMessage.REQUEST);
-            req.setOntology("verifyIsAlive");
-            req.setContent("Are you alive?");
-            for (AID cell : cellAgents) {
-                req.addReceiver(cell);
-            }
-            myAgent.send(req);
-        }
-
         private void handleCycleEnd() {
             if (aliveCellsInThisCycle.isEmpty()) {
                 System.out.println("Todas as células estão mortas. Encerrando jogo...");
                 doDelete();
             } else {
                 informUIAgent();
+                setNewCellStates();
                 cycleNum++;
                 responsesReceived = 0;
                 aliveCellsInThisCycle.clear();
+            }
+        }
+
+        private void setNewCellStates() {
+            for (AID cell : cellAgents) {
+                ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+                informMsg.setOntology("newState");
+                informMsg.addReceiver(cell);
+                if (aliveCellsInThisCycle.contains(cell)) {
+                    informMsg.setContent("true");
+                } else {
+                    informMsg.setContent("false");
+                }
+                myAgent.send(informMsg);
             }
         }
 
@@ -188,7 +203,7 @@ public class ControllerAgent extends Agent {
                 }
                 informMsg.setContent(sb.toString());
                 myAgent.send(informMsg);
-                System.out.println("Enviado updateUI para GameUIAgent. cycleNum=" + cycleNum);
+                System.out.println("Enviado updateUI para GameUIAgent. Mensagem: " + informMsg.getContent());
             } else {
                 System.err.println("GameUIAgent não encontrado no DF.");
             }

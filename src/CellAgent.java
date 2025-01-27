@@ -16,8 +16,9 @@ public class CellAgent extends Agent {
     @Override
     protected void setup() {
         registerOnDF();
-        addBehaviour(new SetInitialState());
-        addBehaviour(new VerifyNeighbor());
+        addBehaviour(new SetState());
+        addBehaviour(new CheckNextState());
+        addBehaviour(new CheckCurrentState());
     }
 
     private void registerOnDF() {
@@ -36,73 +37,73 @@ public class CellAgent extends Agent {
         }
     }
 
-    private void deregisterFromDF() {
+    private synchronized void setAlive(boolean alive) {
+        this.isAlive = alive;
+    }
+
+    public synchronized boolean isAlive() {
+        return this.isAlive;
+    }
+
+    private int[] getCoordinates() {
         try {
-            DFService.deregister(this);
-            System.out.println(getLocalName() + ": removido do DF.");
-        } catch (FIPAException e) {
+            String[] coordinates = getLocalName().replace("CellAgent-", "").split("-");
+            int x = Integer.parseInt(coordinates[0]);
+            int y = Integer.parseInt(coordinates[1]);
+            return new int[]{x, y};
+        } catch (Exception e) {
             e.printStackTrace();
+            return new int[]{-1, -1}; // Retorna coordenadas inválidas em caso de erro
         }
     }
 
-    private class SetInitialState extends CyclicBehaviour {
+    private class SetState extends CyclicBehaviour {
         @Override
         public void action() {
             ACLMessage msg = receive();
-            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("inicialState")) {
+            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("newState")) {
                 String content = msg.getContent();
+                System.out.println(getLocalName() + ": Estado recebido (" + content + ")");
                 if (content != null && !content.isEmpty()) {
-                    isAlive = Boolean.parseBoolean(content);
+                    System.out.println(getLocalName() + ": Estado alterado para (" + content + ")");
+                    setAlive(Boolean.parseBoolean(content));
                 }
-                // Remove as mortas do DF
-                if (!isAlive) {
-                    deregisterFromDF();
-                }
-                return;
-            } else {
-                block();
             }
         }
     }
 
-    private class VerifyNeighbor extends CyclicBehaviour {
+    private class CheckNextState extends CyclicBehaviour {
         @Override
         public void action() {
             ACLMessage msg = receive();
-            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("verifyIsAlive")) {
+            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("willStayAlive")) {
                 int livingNeighbors = getLivingNeighbors();
-                boolean previousState = isAlive;
-
-                if (isAlive && (livingNeighbors < 2 || livingNeighbors > 3)) {
-                    isAlive = false;
-                } else if (!isAlive && livingNeighbors == 3) {
-                    isAlive = true;
-                }
-
-                if (previousState != isAlive) {
-                    if (isAlive) {
-                        registerOnDF();
-                    } else {
-                        deregisterFromDF();
-                    }
+                boolean nextState = false;
+                if (isAlive() && (livingNeighbors < 2 || livingNeighbors > 3)) {
+                    nextState = false;
+                } else if (!isAlive() && livingNeighbors == 3) {
+                    nextState = true;
                 }
 
                 ACLMessage response = msg.createReply();
-                response.setOntology("verifyIsAliveResponse");
-                response.setContent(Boolean.toString(isAlive));
+                response.setOntology("willStayAliveResponse");
+                response.setContent(Boolean.toString(nextState));
                 send(response);
-            } else {
-                block();
             }
         }
 
         private int getLivingNeighbors() {
             int count = 0;
 
-            // Obtém as coordenadas atuais da célula a partir do nome do agente
-            String[] coordinates = getLocalName().replace("CellAgent-", "").split("-");
-            int x = Integer.parseInt(coordinates[1]);
-            int y = Integer.parseInt(coordinates[2]);
+            // Obtém as coordenadas atuais da célula
+            int[] coordinates = getCoordinates();
+            int x = coordinates[0];
+            int y = coordinates[1];
+
+            // Verifica se as coordenadas são válidas
+            if (x == -1 || y == -1) {
+                return count;
+            }
 
             // Itera sobre as 8 células vizinhas
             for (int i = x - 1; i <= x + 1; i++) {
@@ -115,8 +116,7 @@ public class CellAgent extends Agent {
                     // Cria o nome do agente vizinho
                     String neighborName = "CellAgent-" + i + "-" + j;
 
-                    // Consulta o DF para verificar se o vizinho está registrado (ou seja, está
-                    // vivo)
+                    // Busca o agente vizinho no DF
                     DFAgentDescription template = new DFAgentDescription();
                     ServiceDescription sd = new ServiceDescription();
                     sd.setType("CellAgent");
@@ -124,17 +124,42 @@ public class CellAgent extends Agent {
                     template.addServices(sd);
 
                     try {
-                        DFAgentDescription[] result = DFService.search(this.getAgent(), template);
-                        if (result.length > 0) {
-                            count++; // Se o vizinho está registrado no DF, está vivo
+                        DFAgentDescription[] results = DFService.search(myAgent, template);
+                        if (results.length > 0) {
+                            // Envia uma mensagem para o agente vizinho perguntando se está vivo
+                            ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+                            msg.addReceiver(results[0].getName());
+                            msg.setOntology("isAliveQuery");
+                            send(msg);
+
+                            // Espera pela resposta
+                            ACLMessage reply = blockingReceive();
+                            if (reply != null && reply.getOntology().equals("isAliveResponse")) {
+                                boolean isNeighborAlive = Boolean.parseBoolean(reply.getContent());
+                                if (isNeighborAlive) {
+                                    count++;
+                                }
+                            }
                         }
                     } catch (FIPAException e) {
                         e.printStackTrace();
                     }
                 }
             }
-
             return count;
+        }
+    }
+
+    private class CheckCurrentState extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage msg = receive();
+            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("isAliveQuery")) {
+                ACLMessage reply = msg.createReply();
+                reply.setOntology("isAliveResponse");
+                reply.setContent(Boolean.toString(isAlive()));
+                send(reply);
+            }
         }
     }
 }
