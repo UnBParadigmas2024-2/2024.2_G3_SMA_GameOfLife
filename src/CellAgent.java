@@ -21,12 +21,18 @@ public class CellAgent extends Agent {
         Object[] args = getArguments();
         if (args == null || args.length < 2) {
             System.err.println("Erro: Coordenadas não foram passadas para " + getLocalName());
-            // Finaliza o agente
-            doDelete(); 
+            doDelete();
             return;
         }
-        int x = Integer.parseInt(args[0].toString());
-        int y = Integer.parseInt(args[1].toString());
+        int x, y;
+        try {
+            x = Integer.parseInt(args[0].toString());
+            y = Integer.parseInt(args[1].toString());
+        } catch (NumberFormatException e) {
+            System.err.println("Erro: Coordenadas inválidas para " + getLocalName());
+            doDelete();
+            return;
+        }
 
         registerOnDF(x, y);
 
@@ -46,6 +52,7 @@ public class CellAgent extends Agent {
             DFService.register(this, dfd);
         } catch (FIPAException e) {
             e.printStackTrace();
+            doDelete(); // Encerra o agente se não puder se registrar
         }
     }
 
@@ -91,7 +98,7 @@ public class CellAgent extends Agent {
                 // Atualiza o registro no DF conforme o estado
                 if (previousState != isAlive) {
                     if (isAlive) {
-                    	// Coordenadas do agente atual
+                        // Coordenadas do agente atual
                         String[] position = getLocalName().split("-");
                         int myX = Integer.parseInt(position[1].trim());
                         int myY = Integer.parseInt(position[2].trim());
@@ -106,7 +113,6 @@ public class CellAgent extends Agent {
                 response.setOntology("verifyIsAliveResponse");
                 response.setContent(Boolean.toString(isAlive));
                 send(response);
-                // System.out.println(getLocalName() + " próximo estado: " + isAlive); // Debuga o estado enviado
             } else {
                 block();
             }
@@ -126,16 +132,16 @@ public class CellAgent extends Agent {
                 DFAgentDescription[] result = DFService.search(myAgent, template);
 
                 for (DFAgentDescription agentDesc : result) {
-                	ServiceDescription service = (ServiceDescription) agentDesc.getAllServices().next();
+                    ServiceDescription service = (ServiceDescription) agentDesc.getAllServices().next();
                     String[] position = service.getName().split(",");
-  
+
                     int x = Integer.parseInt(position[0].trim());
                     int y = Integer.parseInt(position[1].trim());
 
                     // Coordenadas do agente atual
                     String[] myPosition = getLocalName().split("-");
                     int myX = Integer.parseInt(myPosition[1].trim());
-                    int myY = Integer.parseInt(myPosition[2].trim()); 
+                    int myY = Integer.parseInt(myPosition[2].trim());
 
                     // Verificar se o agente está ao redor (8 vizinhos)
                     if (Math.abs(x - myX) <= 1 && Math.abs(y - myY) <= 1 && !(x == myX && y == myY)) {

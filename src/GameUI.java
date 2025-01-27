@@ -2,6 +2,7 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameUI extends JFrame {
@@ -86,13 +87,8 @@ public class GameUI extends JFrame {
     }
 
     void clearAllCells() {
-        if (gridPanel == null) {
-            System.err.println("Erro: gridPanel não foi inicializado!");
-            return;
-        }
-    
-        if (cellStates == null) {
-            System.err.println("Erro: cellStates não foi inicializado!");
+        if (gridPanel == null || cellStates == null) {
+            System.err.println("Erro: gridPanel ou cellStates não foram inicializados!");
             return;
         }
     
@@ -109,8 +105,11 @@ public class GameUI extends JFrame {
     }
 
     public void onUIUpdate(int newCycleNum, int newAliveCellsCount, List<String> activeCellsList) {
+        if (activeCellsList == null) {
+            activeCellsList = new ArrayList<>();
+        }
         updateInterface(newCycleNum, newAliveCellsCount);
-        updateActiveCells(activeCellsList);  // Atualiza as células ativas na UI
+        updateActiveCells(activeCellsList);
     }
     
 
@@ -120,6 +119,10 @@ public class GameUI extends JFrame {
     }
     
     private void updateActiveCells(List<String> activeCellsList) {
+        if (activeCellsList == null || gridPanel == null) {
+            return;
+        }
+    
         // Zerar o estado de todas as células
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
@@ -130,12 +133,18 @@ public class GameUI extends JFrame {
     
         // Marcar as células ativas
         for (String cellName : activeCellsList) {
-            String[] parts = cellName.split(",");
-            int x = Integer.parseInt(parts[0]);
-            int y = Integer.parseInt(parts[1]);
-            
-            JButton cellButton = (JButton) gridPanel.getComponent(x * gridSize + y);
-            cellButton.setBackground(Color.BLACK); 
+            try {
+                String[] parts = cellName.split(",");
+                int x = Integer.parseInt(parts[0]);
+                int y = Integer.parseInt(parts[1]);
+    
+                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    JButton cellButton = (JButton) gridPanel.getComponent(x * gridSize + y);
+                    cellButton.setBackground(Color.BLACK); 
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao processar célula: " + cellName);
+            }
         }
     }
     
