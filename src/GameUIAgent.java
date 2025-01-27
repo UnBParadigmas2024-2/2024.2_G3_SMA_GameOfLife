@@ -72,11 +72,8 @@ public class GameUIAgent extends Agent {
 
     private void initializeControllerAgent() {
         try {
-            // Verifica se o ControllerAgent já está registrado no DF
             AID controllerAgentAID = searchControllerAgentInDF();
-            
             if (controllerAgentAID == null) {
-                // Se o ControllerAgent não foi encontrado no DF, cria um novo
                 ContainerController container = getContainerController(); 
                 Object[] controllerArgs = new Object[] { getAID() }; 
                 AgentController controllerAgent = container.createNewAgent(
@@ -86,6 +83,8 @@ public class GameUIAgent extends Agent {
                 );
                 controllerAgent.start();
                 System.out.println("ControllerAgent inicializado com sucesso.");
+            } else {
+                System.out.println("ControllerAgent já está registrado no DF.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,53 +145,52 @@ public class GameUIAgent extends Agent {
     // Behavior para o botão Play
     private class PlayBehavior extends OneShotBehaviour {
         public void action() {
-
-
             if (controllerAgentAID == null) {
                 controllerAgentAID = searchControllerAgentInDF();
             }
             if (controllerAgentAID != null) {
-
-                try{
-
-                
+                try {
                     if (isGameStarted) {
                         System.out.println("O jogo já foi iniciado. Botão 'Play' não deve ser renderizado novamente.");
                         return;
                     }
-            
-                    // Marcar o jogo como iniciado
+    
                     isGameStarted = true;
                     isGamePause = false;
-            
+    
                     // Copiar o conteúdo da ActiveCellsList para InicialActiveCellsList
+                    ((GameUIAgent) myAgent).getInicialActiveCellsList().clear();
                     ((GameUIAgent) myAgent).getInicialActiveCellsList().addAll(((GameUIAgent) myAgent).getActiveCellsList());
-                
-
+    
                     ACLMessage playMessage = new ACLMessage(ACLMessage.INFORM);
-                    playMessage.setOntology("ActiveCellsList");  // Nome da ontologia atualizado
-            
-                    // Obter a lista de células ativas e convertê-la para o formato esperado pelo ControllerAgent
+                    playMessage.setOntology("ActiveCellsList");
+    
                     List<String> activeCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
-                    
                     StringBuilder content = new StringBuilder();
                     for (String cell : activeCellsList) {
-                        content.append(cell).append(";");
+                        // Certifique-se de que o nome da célula está no formato correto
+                        String[] parts = cell.split(",");
+                        int x = Integer.parseInt(parts[0]);
+                        int y = Integer.parseInt(parts[1]);
+                        String cellName = "CellAgent-" + x + "-" + y;
+                        content.append(cellName).append(";");
                     }
-            
+    
                     if (content.length() > 0) {
                         content.deleteCharAt(content.length() - 1);
                     }
-            
+    
                     playMessage.setContent(content.toString());
-                    playMessage.addReceiver(controllerAgentAID);  // Usando a variável global controllerAgentAID
+                    playMessage.addReceiver(controllerAgentAID);
                     myAgent.send(playMessage);
-            
+    
                     System.out.println("Play behavior ativado! ActiveCellsList enviada para o ControllerAgent.");
-
+                    System.out.println("ActiveCellsList: " + activeCellsList);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else {
+                System.err.println("ControllerAgent não encontrado no DF.");
             }
         }
     }
@@ -326,7 +324,6 @@ public class GameUIAgent extends Agent {
                     try {
                         String content = message.getContent();
                         if (content != null) {
-                            // Parsear o conteúdo no formato "cycleNum=<num>;aliveCells=<nome1,nome2,...>"
                             String[] parts = content.split(";");
                             for (String part : parts) {
                                 if (part.startsWith("cycleNum=")) {
