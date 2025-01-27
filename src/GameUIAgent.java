@@ -324,7 +324,6 @@ public class GameUIAgent extends Agent {
                     try {
                         String content = message.getContent();
                         if (content != null) {
-                            // Parsear o conteúdo no formato "cycleNum=<num>;aliveCells=<nome1,nome2,...>"
                             String[] parts = content.split(";");
                             for (String part : parts) {
                                 if (part.startsWith("cycleNum=")) {

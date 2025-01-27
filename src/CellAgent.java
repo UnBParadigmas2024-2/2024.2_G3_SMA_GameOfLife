@@ -58,7 +58,9 @@ public class CellAgent extends Agent {
                 if (!isAlive) {
                     deregisterFromDF();
                 }
-                return; // Mensagem tratada, encerra o comportamento
+                return;
+            } else {
+                block();
             }
         }
     }
@@ -68,17 +70,15 @@ public class CellAgent extends Agent {
         public void action() {
             ACLMessage msg = receive();
             if (msg != null && msg.getOntology() != null && msg.getOntology().equals("verifyIsAlive")) {
-                int livingNeighbors = getLivingNeighbors(); // Consulta agentes vivos ao redor
+                int livingNeighbors = getLivingNeighbors();
                 boolean previousState = isAlive;
 
-                // Aplicação das regras do Jogo da Vida
                 if (isAlive && (livingNeighbors < 2 || livingNeighbors > 3)) {
-                    isAlive = false; // Morre por isolamento ou superpopulação
+                    isAlive = false;
                 } else if (!isAlive && livingNeighbors == 3) {
-                    isAlive = true; // Torna-se viva por nascimento
-                } // Se está viva com 2 ou 3 vizinhos, permanece viva.
+                    isAlive = true;
+                }
 
-                // Atualiza o registro no DF conforme o estado
                 if (previousState != isAlive) {
                     if (isAlive) {
                         registerOnDF();
@@ -87,7 +87,6 @@ public class CellAgent extends Agent {
                     }
                 }
 
-                // Envia o estado atual ao ControllerAgent
                 ACLMessage response = msg.createReply();
                 response.setOntology("verifyIsAliveResponse");
                 response.setContent(Boolean.toString(isAlive));
@@ -95,7 +94,6 @@ public class CellAgent extends Agent {
             } else {
                 block();
             }
-
         }
 
         private int getLivingNeighbors() {

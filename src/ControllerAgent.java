@@ -131,8 +131,7 @@ public class ControllerAgent extends Agent {
                     if (reply != null && reply.getOntology() != null
                             && reply.getOntology().equals("verifyIsAliveResponse")) {
                         responsesReceived++;
-                        System.out.println(
-                                "Celula " + reply.getSender().getLocalName() + " respondeu: " + reply.getContent());
+                        System.out.println(reply.getSender().getLocalName() + " respondeu: " + reply.getContent());
                         if ("true".equals(reply.getContent())) {
                             aliveCellsInThisCycle.add(reply.getSender());
                         }
@@ -140,8 +139,8 @@ public class ControllerAgent extends Agent {
                             handleCycleEnd();
                             step = 0;
                         }
-                        // } else {
-                        // block();
+                    } else {
+                        block();
                     }
                     break;
             }
