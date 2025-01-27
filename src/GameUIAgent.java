@@ -16,28 +16,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class GameUIAgent extends Agent {
     private static final long serialVersionUID = 1L;
     private GameUI gameUI;
     private AID controllerAgentAID = null;
     private boolean isGameStarted = false;
-    private boolean isGamePause = false;
 
     private List<String> ActiveCellsList = new ArrayList<>();
-    private List<String> InicialActiveCellsList = new ArrayList<>();
-    
+
     public List<String> getActiveCellsList() {
         if (ActiveCellsList == null) {
             ActiveCellsList = new ArrayList<>();
         }
         return ActiveCellsList;
-    }
-    public List<String> getInicialActiveCellsList() {
-        if (InicialActiveCellsList == null) {
-            InicialActiveCellsList = new ArrayList<>();
-        }
-        return InicialActiveCellsList;
     }
 
     protected void setup() {
@@ -61,8 +52,8 @@ public class GameUIAgent extends Agent {
             gameUI.setVisible(true);
             gameUI.setAgent(this); // Passa uma referência do agente para a UI
         });
-        
-        //Inicializar o ControllerAgent
+
+        // Inicializar o ControllerAgent
         initializeControllerAgent();
         controllerAgentAID = searchControllerAgentInDF();
 
@@ -74,13 +65,12 @@ public class GameUIAgent extends Agent {
         try {
             AID controllerAgentAID = searchControllerAgentInDF();
             if (controllerAgentAID == null) {
-                ContainerController container = getContainerController(); 
-                Object[] controllerArgs = new Object[] { getAID() }; 
+                ContainerController container = getContainerController();
+                Object[] controllerArgs = new Object[] { getAID() };
                 AgentController controllerAgent = container.createNewAgent(
-                    "ControllerAgent",
-                    "src.ControllerAgent",
-                    controllerArgs
-                );
+                        "ControllerAgent",
+                        "src.ControllerAgent",
+                        controllerArgs);
                 controllerAgent.start();
                 System.out.println("ControllerAgent inicializado com sucesso.");
             } else {
@@ -109,7 +99,6 @@ public class GameUIAgent extends Agent {
     }
 
     protected void takeDown() {
-        // Remover registro do agente no DF
         try {
             DFService.deregister(this);
         } catch (FIPAException fe) {
@@ -120,19 +109,8 @@ public class GameUIAgent extends Agent {
     }
 
     public void addBehaviorByName(String behaviorName) {
-        switch (behaviorName) {
-            case "play":
-                addBehaviour(new PlayBehavior());
-                break;
-            case "pause":
-                addBehaviour(new PauseBehavior());
-                break;
-            case "reset":
-                addBehaviour(new ResetBehavior());
-                break;
-            case "clear":
-                addBehaviour(new ClearGridBehavior());
-                break;
+        if ("play".equals(behaviorName)) {
+            addBehaviour(new PlayBehavior());
         }
     }
 
@@ -142,7 +120,6 @@ public class GameUIAgent extends Agent {
         }
     }
 
-    // Behavior para o botão Play
     private class PlayBehavior extends OneShotBehaviour {
         public void action() {
             if (controllerAgentAID == null) {
@@ -151,41 +128,24 @@ public class GameUIAgent extends Agent {
             if (controllerAgentAID != null) {
                 try {
                     if (isGameStarted) {
-                        System.out.println("O jogo já foi iniciado. Botão 'Play' não deve ser renderizado novamente.");
+                        System.out.println("O jogo já foi iniciado. Botão 'Play' não deve pode ser clicado novamente.");
                         return;
                     }
-    
                     isGameStarted = true;
-                    isGamePause = false;
-    
-                    // Copiar o conteúdo da ActiveCellsList para InicialActiveCellsList
-                    ((GameUIAgent) myAgent).getInicialActiveCellsList().clear();
-                    ((GameUIAgent) myAgent).getInicialActiveCellsList().addAll(((GameUIAgent) myAgent).getActiveCellsList());
-    
+
                     ACLMessage playMessage = new ACLMessage(ACLMessage.INFORM);
                     playMessage.setOntology("ActiveCellsList");
-    
-                    List<String> activeCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
+
                     StringBuilder content = new StringBuilder();
-                    for (String cell : activeCellsList) {
-                        // Certifique-se de que o nome da célula está no formato correto
-                        String[] parts = cell.split(",");
-                        int x = Integer.parseInt(parts[0]);
-                        int y = Integer.parseInt(parts[1]);
-                        String cellName = "CellAgent-" + x + "-" + y;
-                        content.append(cellName).append(";");
+                    for (String cell : ActiveCellsList) {
+                        content.append(cell).append(",");
                     }
-    
-                    if (content.length() > 0) {
-                        content.deleteCharAt(content.length() - 1);
-                    }
-    
+
                     playMessage.setContent(content.toString());
                     playMessage.addReceiver(controllerAgentAID);
                     myAgent.send(playMessage);
-    
-                    System.out.println("Play behavior ativado! ActiveCellsList enviada para o ControllerAgent.");
-                    System.out.println("ActiveCellsList: " + activeCellsList);
+
+                    System.out.println("Play behavior ativado! Mensagem enviada: " + playMessage.getContent());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -194,169 +154,70 @@ public class GameUIAgent extends Agent {
             }
         }
     }
-    // Behavior para o botão Pausar
-    private class PauseBehavior extends OneShotBehaviour {
-        public void action() {
-
-            if (controllerAgentAID == null) {
-                controllerAgentAID = searchControllerAgentInDF();
-            }
-            if (controllerAgentAID != null) {
-
-                try{
-
-                    isGamePause = true;
-                    isGameStarted = false;
-                    ACLMessage pauseMessage = new ACLMessage(ACLMessage.INFORM);
-                    pauseMessage.setOntology("pauseCycleUpdate");  // nome da mensagem - Não achamos como Controller Agent lida com isso
-                    pauseMessage.addReceiver(controllerAgentAID);
-                    myAgent.send(pauseMessage);
-                    
-                    System.out.println("Pause behavior ativado!");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-           
-        }
-    }
-
-    // Behavior para o botão Reset
-    private class ResetBehavior extends OneShotBehaviour {
-        public void action() {
-            if (controllerAgentAID == null) {
-                controllerAgentAID = searchControllerAgentInDF();
-            }
-            
-            if (controllerAgentAID != null) {
-                try {
-                    // Criar a mensagem ACL
-                    ACLMessage resetMessage = new ACLMessage(ACLMessage.INFORM);
-                    resetMessage.setOntology("ActiveCellsList");  // colocamos ActiveCellsList, pois não achamos um pra reset em Controller Agent
-                    
-                    List<String> activeCells = ((GameUIAgent) myAgent).getInicialActiveCellsList();
-                    ActiveCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
-
-                    
-                    // Converter a lista de células para o formato esperado pela função do ControllerAgent
-                    StringBuilder contentBuilder = new StringBuilder();
-                    for (String cell : activeCells) {
-                        contentBuilder.append(cell).append(";");
-                    }
-                    
-                    resetMessage.setContent(contentBuilder.toString());
-                    resetMessage.addReceiver(controllerAgentAID);
-                    myAgent.send(resetMessage);
-                    
-                    System.out.println("Reset behavior ativado!");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                System.err.println("ControllerAgent não encontrado no DF.");
-            }
-        }
-    }
-
-    // Behavior para o botão Limpar
-    private class ClearGridBehavior extends OneShotBehaviour {
-        public void action() {
-            System.out.println("Clear grid behavior ativado!");
-    
-            // Verificar se o jogo já foi iniciado e se não está pausado
-            if (isGameStarted && !isGamePause) {
-                System.out.println("O jogo já foi iniciado. Botão 'Clean' não deve funcionar.");
-                return;
-            }
-    
-            // Zerar a lista de células vivas
-            ActiveCellsList.clear();
-            InicialActiveCellsList.clear();
-    
-            try {
-                gameUI.clearAllCells();
-            } catch (Exception e) {
-                System.err.println("Erro ao limpar as células: " + e.getMessage());
-                e.printStackTrace();
-            }
-    
-            System.out.println("Grade limpa, ActiveCellsList zerada, e interface atualizada!");
-        }
-    }
-
-
 
     private class CellSelectionBehavior extends OneShotBehaviour {
         private final int x;
         private final int y;
-    
+
         public CellSelectionBehavior(int x, int y) {
             this.x = x;
             this.y = y;
         }
-    
+
         public void action() {
-            String cell = x + "," + y;
-    
-            List<String> activeCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
-            if (activeCellsList.contains(cell)) {
-                activeCellsList.remove(cell);
+            String cell = "CellAgent-" + x + "-" + y;
+
+            if (ActiveCellsList.contains(cell)) {
+                ActiveCellsList.remove(cell);
             } else {
-                activeCellsList.add(cell);
+                ActiveCellsList.add(cell);
             }
-    
+
             System.out.println("Célula selecionada: (" + x + ", " + y + ")");
         }
     }
-    
-
 
     private class UpdateUI extends CyclicBehaviour {
-        private int cycleNum = 0; 
-        private int aliveCellsCount = 0; 
+        private int cycleNum = 0;
+        private int aliveCellsCount = 0;
 
         @Override
         public void action() {
             ACLMessage message = myAgent.receive();
-            if (message != null) {
-                if ("updateUI".equals(message.getOntology())) {
-                    try {
-                        String content = message.getContent();
-                        if (content != null) {
-                            String[] parts = content.split(";");
-                            for (String part : parts) {
-                                if (part.startsWith("cycleNum=")) {
-                                    cycleNum = Integer.parseInt(part.split("=")[1]);
-                                } else if (part.startsWith("aliveCells=")) {
-                                    String cells = part.split("=")[1];
-                                    if (!cells.isEmpty()) {
-                                        String[] cellNames = cells.split(",");
-                                        ActiveCellsList.clear();
-                                        ActiveCellsList.addAll(Arrays.asList(cellNames));
-                                    } else {
-                                        ActiveCellsList.clear(); // Nenhuma célula viva
-                                    }
+            if (message != null && "updateUI".equals(message.getOntology())) {
+                try {
+                    String content = message.getContent();
+                    if (content != null) {
+                        String[] parts = content.split(";");
+                        for (String part : parts) {
+                            if (part.startsWith("cycleNum=")) {
+                                cycleNum = Integer.parseInt(part.split("=")[1]);
+                            } else if (part.startsWith("aliveCells=")) {
+                                String cells = part.split("=")[1];
+                                if (!cells.isEmpty()) {
+                                    String[] cellNames = cells.split(",");
+                                    ActiveCellsList.clear();
+                                    ActiveCellsList.addAll(Arrays.asList(cellNames));
+                                } else {
+                                    ActiveCellsList.clear(); // Nenhuma célula viva
                                 }
                             }
-
-                            aliveCellsCount = ActiveCellsList.size();
-
-                            // Atualizar a interface
-                            System.out.println("Ciclo Atual: " + cycleNum);
-                            System.out.println("Células Vivas: " + aliveCellsCount);
-                            System.out.println("Lista de Células Vivas: " + ActiveCellsList);
-
-                            // Atualizar interface gráfica
-                            gameUI.onUIUpdate(cycleNum, aliveCellsCount, ActiveCellsList);
-                        } else {
-                            System.err.println("Erro: Mensagem recebida com conteúdo nulo.");
                         }
-                    } catch (Exception e) {
-                        System.err.println("Erro ao processar a mensagem: " + e.getMessage());
+
+                        aliveCellsCount = ActiveCellsList.size();
+
+                        // Atualizar a interface
+                        System.out.println("Ciclo Atual: " + cycleNum);
+                        System.out.println("Células Vivas: " + aliveCellsCount);
+                        System.out.println("Lista de Células Vivas: " + ActiveCellsList);
+
+                        // Atualizar interface gráfica
+                        gameUI.onUIUpdate(cycleNum, aliveCellsCount, ActiveCellsList);
+                    } else {
+                        System.err.println("Erro: Mensagem recebida com conteúdo nulo.");
                     }
-                } else {
-                    System.out.println("Mensagem com ontologia inesperada recebida: " + message.getOntology());
+                } catch (Exception e) {
+                    System.err.println("Erro ao processar a mensagem: " + e.getMessage());
                 }
             } else {
                 block();

@@ -10,6 +10,7 @@ import jade.domain.FIPAException;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ControllerAgent extends Agent {
@@ -19,12 +20,13 @@ public class ControllerAgent extends Agent {
     private int cycleNum = 0;
     private List<AID> cellAgents = new ArrayList<>();
     private AID gameUIAgentAID = null;
+    private final int gridSize = 5;
 
     @Override
     protected void setup() {
         System.out.println(getLocalName() + ": inicializando ControllerAgent...");
         registerInDF();
-        createCellAgents(5, 5);
+        createCellAgents(gridSize);
         gameUIAgentAID = searchGameUIAgentInDF();
 
         addBehaviour(new SetAliveCells());
@@ -46,9 +48,9 @@ public class ControllerAgent extends Agent {
         }
     }
 
-    private void createCellAgents(int width, int height) {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+    private void createCellAgents(int gridSize) {
+        for (int x = 0; x < gridSize; x++) {
+            for (int y = 0; y < gridSize; y++) {
                 String cellName = "CellAgent-" + x + "-" + y;
                 try {
                     AgentController ac = getContainerController().createNewAgent(cellName, "src.CellAgent", null);
@@ -104,7 +106,7 @@ public class ControllerAgent extends Agent {
         private List<String> parseAliveCells(String content) {
             List<String> result = new ArrayList<>();
             if (content != null && !content.isEmpty()) {
-                String[] tokens = content.split(";");
+                String[] tokens = content.split(",");
                 for (String t : tokens) {
                     result.add(t.trim());
                 }

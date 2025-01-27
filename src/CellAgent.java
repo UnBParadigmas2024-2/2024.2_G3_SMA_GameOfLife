@@ -100,7 +100,7 @@ public class CellAgent extends Agent {
             int count = 0;
 
             // Obtém as coordenadas atuais da célula a partir do nome do agente
-            String[] coordinates = getLocalName().split("-");
+            String[] coordinates = getLocalName().replace("CellAgent-", "").split("-");
             int x = Integer.parseInt(coordinates[1]);
             int y = Integer.parseInt(coordinates[2]);
 
