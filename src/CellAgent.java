@@ -16,8 +16,8 @@ public class CellAgent extends Agent {
     @Override
     protected void setup() {
         registerOnDF();
-        // addBehaviour(new VerifyNeighbor());
         addBehaviour(new SetInitialState());
+        addBehaviour(new VerifyNeighbor());
     }
 
     private void registerOnDF() {
@@ -50,16 +50,12 @@ public class CellAgent extends Agent {
         public void action() {
             ACLMessage msg = receive();
             if (msg != null && msg.getOntology() != null && msg.getOntology().equals("inicialState")) {
-                System.out.println("Recebido : " + msg.getContent());
-
                 String content = msg.getContent();
                 if (content != null && !content.isEmpty()) {
                     isAlive = Boolean.parseBoolean(content);
                 }
-                // Atualiza registro no DF se estiver viva
-                if (isAlive) {
-                    registerOnDF();
-                } else {
+                // Remove as mortas do DF
+                if (!isAlive) {
                     deregisterFromDF();
                 }
             }
@@ -70,7 +66,7 @@ public class CellAgent extends Agent {
         @Override
         public void action() {
             ACLMessage msg = receive();
-            if (msg != null && "verifyIsAlive".equals(msg.getOntology())) {
+            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("verifyIsAlive")) {
                 int livingNeighbors = getLivingNeighbors(); // Consulta agentes vivos ao redor
                 boolean previousState = isAlive;
 
@@ -95,57 +91,46 @@ public class CellAgent extends Agent {
                 response.setOntology("verifyIsAliveResponse");
                 response.setContent(Boolean.toString(isAlive));
                 send(response);
-            } else {
-                block();
             }
         }
 
         private int getLivingNeighbors() {
             int count = 0;
-
-            try {
-
-                DFAgentDescription template = new DFAgentDescription();
-                ServiceDescription sd = new ServiceDescription();
-                sd.setType("CellAgent");
-                template.addServices(sd);
-
-                // Recuperar todos os agentes célula
-                DFAgentDescription[] result = DFService.search(myAgent, template);
-
-                for (DFAgentDescription agentDesc : result) {
-                    ServiceDescription service = (ServiceDescription) agentDesc.getAllServices().next();
-                    String[] position = service.getName().split(",");
-
-                    int x = Integer.parseInt(position[0].trim());
-                    int y = Integer.parseInt(position[1].trim());
-
-                    // Coordenadas do agente atual
-                    String[] myPosition = getLocalName().split("-");
-                    int myX = Integer.parseInt(myPosition[1].trim());
-                    int myY = Integer.parseInt(myPosition[2].trim());
-
-                    // Verificar se o agente está ao redor (8 vizinhos)
-                    if (Math.abs(x - myX) <= 1 && Math.abs(y - myY) <= 1 && !(x == myX && y == myY)) {
-                        // Enviar mensagem para verificar se o agente está vivo
-                        ACLMessage query = new ACLMessage(ACLMessage.REQUEST);
-                        query.addReceiver(agentDesc.getName());
-                        query.setOntology("verifyIsAlive");
-                        send(query);
-
-                        // Receber resposta
-                        ACLMessage reply = blockingReceive();
-                        if (reply != null && "verifyIsAliveResponse".equals(reply.getOntology())) {
-                            if (Boolean.parseBoolean(reply.getContent())) {
-                                count++;
-                            }
+        
+            // Obtém as coordenadas atuais da célula a partir do nome do agente
+            String[] coordinates = getLocalName().split("-");
+            int x = Integer.parseInt(coordinates[1]);
+            int y = Integer.parseInt(coordinates[2]);
+        
+            // Itera sobre as 8 células vizinhas
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    // Ignora a própria célula
+                    if (i == x && j == y) {
+                        continue;
+                    }
+        
+                    // Cria o nome do agente vizinho
+                    String neighborName = "CellAgent-" + i + "-" + j;
+        
+                    // Consulta o DF para verificar se o vizinho está registrado (ou seja, está vivo)
+                    DFAgentDescription template = new DFAgentDescription();
+                    ServiceDescription sd = new ServiceDescription();
+                    sd.setType("CellAgent");
+                    sd.setName(neighborName);
+                    template.addServices(sd);
+        
+                    try {
+                        DFAgentDescription[] result = DFService.search(this.getAgent(), template);
+                        if (result.length > 0) {
+                            count++; // Se o vizinho está registrado no DF, está vivo
                         }
+                    } catch (FIPAException e) {
+                        e.printStackTrace();
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-
+        
             return count;
         }
     }

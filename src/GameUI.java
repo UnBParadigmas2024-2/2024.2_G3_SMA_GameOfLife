@@ -10,7 +10,7 @@ public class GameUI extends JFrame {
     private JLabel cycleLabel, aliveCellsLabel;
     private JPanel gridPanel;
     private boolean[][] cellStates;
-    private final int gridSize = 25; // Tamanho da grade
+    private final int gridSize = 5; // Tamanho da grade
     private GameUIAgent agent; // Referência ao agente
 
     public GameUI() {

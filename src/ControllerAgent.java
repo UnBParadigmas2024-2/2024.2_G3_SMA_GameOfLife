@@ -24,7 +24,7 @@ public class ControllerAgent extends Agent {
     protected void setup() {
         System.out.println(getLocalName() + ": inicializando ControllerAgent...");
         registerInDF();
-        createCellAgents(25, 25);
+        createCellAgents(5, 5);
         gameUIAgentAID = searchGameUIAgentInDF();
 
         addBehaviour(new SetAliveCells());
@@ -83,30 +83,19 @@ public class ControllerAgent extends Agent {
         public void action() {
             ACLMessage msg = myAgent.receive();
             if (msg != null && msg.getOntology() != null && msg.getOntology().equals("ActiveCellsList")) {
-                String content = msg.getContent(); 
+                String content = msg.getContent();
                 List<String> aliveCells = parseAliveCells(content);
 
-                System.out.println("Recebido ActiveCellsList: " + aliveCells);
-                // System.out.println("Cell agents: " + cellAgents);
-
-
                 for (AID cellAID : cellAgents) {
+                    ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+                    informMsg.setOntology("inicialState");
+                    informMsg.addReceiver(cellAID);
                     if (!aliveCells.contains(cellAID.getLocalName())) {
-                        ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
-                        informMsg.setOntology("inicialState");
-                        informMsg.addReceiver(cellAID);
                         informMsg.setContent(String.valueOf("false"));
-                        
-                        myAgent.send(informMsg);
                     } else {
-                        ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
-                        informMsg.setOntology("inicialState");
-                        informMsg.addReceiver(cellAID);
                         informMsg.setContent(String.valueOf("true"));
-                        
-                        myAgent.send(informMsg);
-                        System.out.println("Enviado inicialState true para " + cellAID.getLocalName());
                     }
+                    myAgent.send(informMsg);
                 }
             }
         }
@@ -122,7 +111,6 @@ public class ControllerAgent extends Agent {
             return result;
         }
     }
-
 
     private class UpdateGameCycle extends CyclicBehaviour {
 
@@ -186,12 +174,13 @@ public class ControllerAgent extends Agent {
                 ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
                 informMsg.setOntology("updateUI");
                 informMsg.addReceiver(gameUIAgentAID);
-        
+
                 StringBuilder sb = new StringBuilder();
                 sb.append("cycleNum=").append(cycleNum).append(";aliveCells=");
                 for (int i = 0; i < aliveCellsInThisCycle.size(); i++) {
                     sb.append(aliveCellsInThisCycle.get(i).getLocalName());
-                    if (i < aliveCellsInThisCycle.size() - 1) sb.append(",");
+                    if (i < aliveCellsInThisCycle.size() - 1)
+                        sb.append(",");
                 }
                 informMsg.setContent(sb.toString());
                 myAgent.send(informMsg);
