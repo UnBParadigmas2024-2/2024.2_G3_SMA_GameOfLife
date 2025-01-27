@@ -158,6 +158,8 @@ public class GameUIAgent extends Agent {
                     isGameStarted = true;
                     isGamePause = false;
     
+                    // Copiar o conteúdo da ActiveCellsList para InicialActiveCellsList
+                    ((GameUIAgent) myAgent).getInicialActiveCellsList().clear();
                     ((GameUIAgent) myAgent).getInicialActiveCellsList().addAll(((GameUIAgent) myAgent).getActiveCellsList());
     
                     ACLMessage playMessage = new ACLMessage(ACLMessage.INFORM);
@@ -166,7 +168,12 @@ public class GameUIAgent extends Agent {
                     List<String> activeCellsList = ((GameUIAgent) myAgent).getActiveCellsList();
                     StringBuilder content = new StringBuilder();
                     for (String cell : activeCellsList) {
-                        content.append(cell).append(";");
+                        // Certifique-se de que o nome da célula está no formato correto
+                        String[] parts = cell.split(",");
+                        int x = Integer.parseInt(parts[0]);
+                        int y = Integer.parseInt(parts[1]);
+                        String cellName = "CellAgent-" + x + "-" + y;
+                        content.append(cellName).append(";");
                     }
     
                     if (content.length() > 0) {

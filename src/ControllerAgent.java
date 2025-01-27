@@ -51,8 +51,7 @@ public class ControllerAgent extends Agent {
             for (int y = 0; y < height; y++) {
                 String cellName = "CellAgent-" + x + "-" + y;
                 try {
-                    Object[] args = {x, y};
-                    AgentController ac = getContainerController().createNewAgent(cellName, "src.CellAgent", args);
+                    AgentController ac = getContainerController().createNewAgent(cellName, "src.CellAgent", null);
                     ac.start();
                     cellAgents.add(new AID(cellName, AID.ISLOCALNAME));
                 } catch (StaleProxyException e) {
@@ -92,7 +91,6 @@ public class ControllerAgent extends Agent {
 
 
                 for (AID cellAID : cellAgents) {
-                    System.out.println("Enviando inicialState para " + cellAID.getLocalName());
                     if (!aliveCells.contains(cellAID.getLocalName())) {
                         ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
                         informMsg.setOntology("inicialState");

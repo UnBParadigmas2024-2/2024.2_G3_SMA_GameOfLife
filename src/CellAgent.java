@@ -15,50 +15,31 @@ public class CellAgent extends Agent {
 
     @Override
     protected void setup() {
-        System.out.println(getLocalName() + ": inicializando CellAgent...");
-
-        // Recupera as coordenadas do agente
-        Object[] args = getArguments();
-        if (args == null || args.length < 2) {
-            System.err.println("Erro: Coordenadas não foram passadas para " + getLocalName());
-            doDelete();
-            return;
-        }
-        int x, y;
-        try {
-            x = Integer.parseInt(args[0].toString());
-            y = Integer.parseInt(args[1].toString());
-        } catch (NumberFormatException e) {
-            System.err.println("Erro: Coordenadas inválidas para " + getLocalName());
-            doDelete();
-            return;
-        }
-
-        registerOnDF(x, y);
-
-        System.out.println(getLocalName() + " iniciado nas coordenadas (" + x + ", " + y + "). Estado inicial: " + isAlive);
-        addBehaviour(new VerifyNeighbor());
+        registerOnDF();
+        // addBehaviour(new VerifyNeighbor());
         addBehaviour(new SetInitialState());
     }
 
-    private void registerOnDF(int x, int y) {
+    private void registerOnDF() {
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
         sd.setType("CellAgent");
-        sd.setName(x + "," + y);
+        sd.setName(getLocalName());
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
+            System.out.println(getLocalName() + ": registrado no DF.");
         } catch (FIPAException e) {
             e.printStackTrace();
-            doDelete(); // Encerra o agente se não puder se registrar
+            doDelete();
         }
     }
 
     private void deregisterFromDF() {
         try {
             DFService.deregister(this);
+            System.out.println(getLocalName() + ": removido do DF.");
         } catch (FIPAException e) {
             e.printStackTrace();
         }
@@ -68,14 +49,19 @@ public class CellAgent extends Agent {
         @Override
         public void action() {
             ACLMessage msg = receive();
-            if (msg != null && "setInitialState".equals(msg.getOntology())) {
-                isAlive = Boolean.parseBoolean(msg.getContent());
-                if (!isAlive) {
+            if (msg != null && msg.getOntology() != null && msg.getOntology().equals("inicialState")) {
+                System.out.println("Recebido : " + msg.getContent());
+
+                String content = msg.getContent();
+                if (content != null && !content.isEmpty()) {
+                    isAlive = Boolean.parseBoolean(content);
+                }
+                // Atualiza registro no DF se estiver viva
+                if (isAlive) {
+                    registerOnDF();
+                } else {
                     deregisterFromDF();
                 }
-                System.out.println(getLocalName() + " estado inicial: " + isAlive);
-            } else {
-                block();
             }
         }
     }
@@ -98,11 +84,7 @@ public class CellAgent extends Agent {
                 // Atualiza o registro no DF conforme o estado
                 if (previousState != isAlive) {
                     if (isAlive) {
-                        // Coordenadas do agente atual
-                        String[] position = getLocalName().split("-");
-                        int myX = Integer.parseInt(position[1].trim());
-                        int myY = Integer.parseInt(position[2].trim());
-                        registerOnDF(myX, myY);
+                        registerOnDF();
                     } else {
                         deregisterFromDF();
                     }
