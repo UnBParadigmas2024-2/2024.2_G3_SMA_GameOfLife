@@ -45,7 +45,14 @@ O Jogo da Vida é um autômato celular desenvolvido pelo matemático britânico 
 Desde sua criação, o Jogo da Vida tem sido amplamente estudado em pesquisas científicas, experimentos computacionais e obras artísticas. Ele também influenciou o design de algoritmos e sistemas computacionais.
 
 ## Screenshots
-<!-- Adicione 2 ou mais screenshots do projeto em termos de interface e/ou funcionamento. -->
+
+![play](assets/play.png)
+
+![select](assets/select.png)
+
+![sniff1](assets/sniff1.png)
+
+![sniff2](assets/sniff2.png)
 
 ## Instalação e Execução
 **Linguagens**: Java<br>
